@@ -1,0 +1,41 @@
+{
+  "services": [
+    {
+      "type": "app",
+      "name": "go-api-whatsapp",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/joceilton2210/Goapi.git",
+        "branch": "main"
+      },
+      "build": {
+        "type": "dockerfile",
+        "file": "api/Dockerfile"
+      },
+      "env": "PORT=4000\nNODE_ENV=production\nAPI_KEY=change-this-key",
+      "domains": [
+        {
+          "host": "$(EASYPANEL_DOMAIN)",
+          "port": 4000
+        }
+      ],
+      "mounts": [
+        {
+          "type": "volume",
+          "name": "sessions",
+          "mountPath": "/app/sessions"
+        },
+        {
+          "type": "volume",
+          "name": "uploads",
+          "mountPath": "/app/uploads"
+        },
+        {
+          "type": "volume",
+          "name": "logs",
+          "mountPath": "/app/logs"
+        }
+      ]
+    }
+  ]
+}

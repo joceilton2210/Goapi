@@ -73,3 +73,7 @@ Sua API estará rodando.
 > **Nota:** Para acessar os arquivos HTML (login, instancia, etc), o ideal é usar um servidor web como Nginx na frente, mas com a configuração atual do Docker, eles não estão sendo servidos automaticamente.
 >
 > **Correção Recomendada:** Para servir o Frontend (HTMLs) junto com a API, precisamos ajustar o `server.js` para servir arquivos estáticos da pasta raiz ou criar um container Nginx.
+
+
+
+https://github.com/joceilton2210/Goapi.git
