@@ -4,7 +4,6 @@ import makeWASocket, {
     makeCacheableSignalKeyStore
 } from '@whiskeysockets/baileys';
 import { usePostgresAuthState } from '../auth/PostgresAuthState.js';
-import { Boom } from '@hapi/boom';
 import qrcode from 'qrcode-terminal';
 import NodeCache from 'node-cache';
 import path from 'path';

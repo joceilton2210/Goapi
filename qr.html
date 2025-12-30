@@ -476,24 +476,24 @@
 
         // Função para compartilhar link
         function shareQRLink() {
-            const currentUrl = window.location.href;
+            const shareUrl = `${window.location.origin}/qr-share.html?instance=${encodeURIComponent(instanceId)}`;
             
             // Tentar usar a API de compartilhamento nativa
             if (navigator.share) {
                 navigator.share({
                     title: 'Conectar WhatsApp - GO API',
-                    text: `Conecte sua instância ${instanceId} ao WhatsApp`,
-                    url: currentUrl
+                    text: `Conecte a instância ${instanceId} ao WhatsApp`,
+                    url: shareUrl
                 }).then(() => {
                     showSuccess('Link compartilhado com sucesso!');
                 }).catch((error) => {
                     if (error.name !== 'AbortError') {
-                        copyToClipboard(currentUrl);
+                        copyToClipboard(shareUrl);
                     }
                 });
             } else {
                 // Fallback: copiar para clipboard
-                copyToClipboard(currentUrl);
+                copyToClipboard(shareUrl);
             }
         }
 

@@ -154,13 +154,17 @@
                     <div class="h-8 w-[1px] bg-border-light dark:bg-border-dark"></div>
                     <div class="flex items-center gap-3">
                         <div class="text-right hidden sm:block">
-                            <p class="text-sm font-semibold">Admin User</p>
-                            <p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Pro Plan</p>
+                            <p id="user-name" class="text-sm font-semibold">Usuário</p>
+                            <p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">GO API</p>
                         </div>
                         <div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-primary"
                             data-alt="User profile picture placeholder"
                             style='background-image: url("icone.png");'>
                         </div>
+                        <button id="logout-btn" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
+                            <span class="material-symbols-outlined text-[18px]">logout</span>
+                            <span class="hidden sm:inline">Sair</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -468,6 +472,27 @@
         if (!localStorage.getItem('user_token')) {
             window.location.href = 'login.html';
         }
+
+        // Exibir nome do usuário
+        const userName = localStorage.getItem('user_name') || 'Usuário';
+        document.getElementById('user-name').textContent = userName;
+
+        // Botão de logout
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            showConfirm(
+                'Tem certeza que deseja sair?',
+                () => {
+                    localStorage.removeItem('user_token');
+                    localStorage.removeItem('user_name');
+                    showSuccess('Logout realizado com sucesso!', 'Até logo!');
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 1000);
+                },
+                null,
+                'Confirmar Logout'
+            );
+        });
 
         // Usar configuração global
         const API_CONFIG = window.GO_API_CONFIG || {

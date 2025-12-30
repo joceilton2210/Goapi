@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html class="dark" lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Conectar WhatsApp - GO API</title>
+    <link rel="icon" type="image/png" href="icone.png">
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/alert.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#eaa800",
+                        "primary-hover": "#1d66f0",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111722",
+                        "surface-dark": "#192233",
+                        "surface-light": "#ffffff",
+                        "border-dark": "#232f48",
+                        "border-light": "#e2e8f0",
+                        "text-secondary-dark": "#92a4c9",
+                        "text-secondary-light": "#64748b",
+                    },
+                    fontFamily: { "display": ["Inter", "sans-serif"] }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 dark:bg-background-dark min-h-screen flex flex-col font-display text-slate-900 dark:text-white transition-colors duration-200">
+    <!-- Header -->
+    <header class="border-b border-solid border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark">
+        <div class="flex items-center justify-center py-3 px-4 md:px-10 lg:px-20">
+            <div class="flex items-center justify-between w-full max-w-[1200px]">
+                <div class="flex items-center gap-6 text-slate-900 dark:text-white">
+                    <img src="logo_black.png" alt="GO API Logo" class="h-12 w-auto object-contain dark:hidden">
+                    <img src="logo_white.png" alt="GO API Logo" class="h-12 w-auto object-contain hidden dark:block">
+                </div>
+                <div class="flex gap-6 items-center">
+                    <button id="theme-toggle" class="text-text-secondary-light dark:text-text-secondary-dark hover:text-white transition-colors">
+                        <span class="material-symbols-outlined dark:hidden">light_mode</span>
+                        <span class="material-symbols-outlined hidden dark:inline">dark_mode</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex items-center justify-center p-4">
+        <div class="w-full max-w-md">
+            <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-8 shadow-sm">
+                <div class="text-center mb-6">
+                    <h1 class="text-2xl font-bold mb-2">Conectar WhatsApp</h1>
+                    <p class="text-sm text-text-secondary-light dark:text-text-secondary-dark" id="instance-name">Instância: Carregando...</p>
+                </div>
+
+                <!-- QR Code -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg p-6 mb-6">
+                    <div id="qrcode" class="flex items-center justify-center min-h-[250px]">
+                        <div class="text-center">
+                            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-3"></div>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm">Gerando QR Code...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status -->
+                <div id="status-container" class="mb-6 text-center">
+                    <div class="flex items-center justify-center gap-2 text-sm">
+                        <span class="relative flex h-3 w-3">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                        </span>
+                        <span>Aguardando leitura...</span>
+                    </div>
+                </div>
+
+                <!-- Instruções -->
+                <div class="space-y-3 mb-6">
+                    <div class="flex items-start gap-3 text-sm">
+                        <span class="material-symbols-outlined text-primary text-xl mt-0.5">smartphone</span>
+                        <div>
+                            <p class="font-semibold mb-1">1. Abra o WhatsApp</p>
+                            <p class="text-text-secondary-light dark:text-text-secondary-dark text-xs">No seu celular</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3 text-sm">
+                        <span class="material-symbols-outlined text-primary text-xl mt-0.5">settings</span>
+                        <div>
+                            <p class="font-semibold mb-1">2. Vá em Aparelhos Conectados</p>
+                            <p class="text-text-secondary-light dark:text-text-secondary-dark text-xs">Menu > Aparelhos Conectados</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3 text-sm">
+                        <span class="material-symbols-outlined text-primary text-xl mt-0.5">qr_code_2</span>
+                        <div>
+                            <p class="font-semibold mb-1">3. Escaneie o código</p>
+                            <p class="text-text-secondary-light dark:text-text-secondary-dark text-xs">Aponte a câmera para o QR Code acima</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botão Recarregar -->
+                <button id="reload-btn" class="w-full bg-primary hover:bg-white hover:text-slate-900 text-slate-900 font-bold py-3 px-4 rounded-lg transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20">
+                    <span class="material-symbols-outlined">refresh</span>
+                    <span>Recarregar QR Code</span>
+                </button>
+            </div>
+
+            <!-- Aviso -->
+            <div class="mt-4 text-center text-xs text-text-secondary-light dark:text-text-secondary-dark">
+                <p>⚠️ Não compartilhe este link com pessoas não autorizadas</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark py-3">
+        <div class="flex items-center justify-center gap-2 text-sm text-text-secondary-light dark:text-text-secondary-dark">
+            <span class="text-primary">GO API Whatsapp</span>
+            <span>Time GO</span>
+        </div>
+    </footer>
+
+    <script>
+        // Theme toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        html.classList.toggle('dark', currentTheme === 'dark');
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+        });
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const instanceId = urlParams.get('instance');
+        
+        if (!instanceId) {
+            showError('Instância não especificada', 'Erro');
+            setTimeout(() => window.location.href = 'instancia.html', 2000);
+        }
+
+        const API_CONFIG = window.GO_API_CONFIG || {
+            baseUrl: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                ? 'http://localhost:4000/api'
+                : `${window.location.protocol}//${window.location.host}/api`,
+            apiKey: 'change-this-key'
+        };
+
+        document.getElementById('instance-name').textContent = `Instância: ${instanceId}`;
+
+        let checkInterval = null;
+        let qrRefreshInterval = null;
+        let isConnected = false;
+
+        function updateStatus(status, message) {
+            const statusContainer = document.getElementById('status-container');
+            
+            if (status === 'waiting') {
+                statusContainer.innerHTML = `
+                    <div class="flex items-center justify-center gap-2 text-sm">
+                        <span class="relative flex h-3 w-3">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                        </span>
+                        <span>${message}</span>
+                    </div>
+                `;
+            } else if (status === 'connected') {
+                statusContainer.innerHTML = `
+                    <div class="flex items-center justify-center gap-2 text-sm text-green-600 dark:text-green-400">
+                        <span class="material-symbols-outlined text-2xl">check_circle</span>
+                        <span class="font-bold">${message}</span>
+                    </div>
+                `;
+            } else if (status === 'error') {
+                statusContainer.innerHTML = `
+                    <div class="flex items-center justify-center gap-2 text-sm text-red-600 dark:text-red-400">
+                        <span class="material-symbols-outlined text-2xl">error</span>
+                        <span>${message}</span>
+                    </div>
+                `;
+            }
+        }
+
+        async function loadQRCode() {
+            try {
+                updateStatus('waiting', 'Carregando QR Code...');
+
+                const qrRes = await fetch(`${API_CONFIG.baseUrl}/instances/${instanceId}/qr`, {
+                    headers: { 'x-api-key': API_CONFIG.apiKey }
+                });
+                const qrData = await qrRes.json();
+
+                if (qrData.success && qrData.data.qrCode) {
+                    const qrElement = document.getElementById('qrcode');
+                    qrElement.innerHTML = '';
+                    
+                    new QRCode(qrElement, {
+                        text: qrData.data.qrCode,
+                        width: 250,
+                        height: 250,
+                        colorDark: "#000000",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+                    
+                    updateStatus('waiting', 'Aguardando leitura...');
+                } else {
+                    updateStatus('error', 'Erro ao gerar QR Code');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                updateStatus('error', 'Erro de conexão com API');
+            }
+        }
+
+        function handleConnection() {
+            if (isConnected) return;
+            isConnected = true;
+
+            // Parar todas as verificações
+            if (checkInterval) clearInterval(checkInterval);
+            if (qrRefreshInterval) clearInterval(qrRefreshInterval);
+
+            updateStatus('connected', '✓ WhatsApp Conectado!');
+            showSuccess('WhatsApp conectado com sucesso! Fechando em 10 segundos...', 'Conectado!');
+
+            let countdown = 10;
+            const countdownInterval = setInterval(() => {
+                countdown--;
+                if (countdown > 0) {
+                    updateStatus('connected', `✓ Conectado! Fechando em ${countdown}s...`);
+                } else {
+                    clearInterval(countdownInterval);
+                    window.close();
+                    setTimeout(() => window.location.href = 'instancia.html', 500);
+                }
+            }, 1000);
+        }
+
+        async function checkConnection() {
+            if (isConnected) return;
+
+            try {
+                const statusRes = await fetch(`${API_CONFIG.baseUrl}/instances/${instanceId}/status`, {
+                    headers: { 'x-api-key': API_CONFIG.apiKey }
+                });
+                const statusData = await statusRes.json();
+
+                if (statusData.success && statusData.data.isConnected) {
+                    handleConnection();
+                }
+            } catch (error) {
+                console.error('Erro ao verificar status:', error);
+            }
+        }
+
+        document.getElementById('reload-btn').addEventListener('click', () => {
+            updateStatus('waiting', 'Recarregando...');
+            loadQRCode();
+        });
+
+        // Carregar QR Code inicial
+        loadQRCode();
+
+        // Verificar conexão a cada 2 segundos
+        checkInterval = setInterval(checkConnection, 2000);
+
+        // Atualizar QR Code a cada 45 segundos (antes de expirar)
+        qrRefreshInterval = setInterval(() => {
+            if (!isConnected) {
+                console.log('Atualizando QR Code...');
+                loadQRCode();
+            }
+        }, 45000);
+    </script>
+</body>
+</html>

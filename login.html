@@ -245,8 +245,9 @@
             const senha = document.getElementById('senha').value;
             
             if(usuario && senha) {
-                // Simulação de Sucesso
+                // Salvar token e nome do usuário
                 localStorage.setItem('user_token', 'demo-token');
+                localStorage.setItem('user_name', usuario);
                 
                 if (!isLogin) {
                     showSuccess('Cadastro realizado com sucesso! Redirecionando...', 'Bem-vindo!');
