@@ -607,7 +607,8 @@
                         updateQRStatus('waiting', 'Aguardando leitura...');
                     }
                 } else {
-                    updateQRStatus('error', 'Erro ao gerar QR Code');
+                    // Se não tem QR, pode estar inicializando
+                    updateQRStatus('waiting', 'Inicializando instância...');
                 }
             } catch (error) {
                 console.error('Erro ao buscar QR/Status:', error);

@@ -40,11 +40,30 @@ class InstanceController {
     async getStatus(req, res, next) {
         try {
             const { instanceId } = req.params;
+            
+            // Verificar se a instância existe
+            const instance = baileysService.getInstance(instanceId);
+            
+            if (!instance) {
+                return res.json({
+                    success: true,
+                    data: {
+                        instanceId,
+                        isConnected: false,
+                        hasQR: false,
+                        exists: false
+                    }
+                });
+            }
+            
             const status = baileysService.getStatus(instanceId);
 
             res.json({
                 success: true,
-                data: status
+                data: {
+                    ...status,
+                    exists: true
+                }
             });
         } catch (error) {
             next(error);
@@ -54,12 +73,25 @@ class InstanceController {
     async getQR(req, res, next) {
         try {
             const { instanceId } = req.params;
+            
+            // Verificar se a instância existe
+            const instance = baileysService.getInstance(instanceId);
+            
+            // Se não existir, criar automaticamente
+            if (!instance) {
+                logger.info(`Instance ${instanceId} not found, creating...`);
+                await baileysService.createInstance(instanceId);
+                
+                // Aguardar um pouco para o QR ser gerado
+                await new Promise(resolve => setTimeout(resolve, 2000));
+            }
+            
             const qrCode = baileysService.getQRCode(instanceId);
 
             if (!qrCode) {
                 return res.status(404).json({
                     success: false,
-                    message: 'QR Code not available. Instance may be already connected.'
+                    message: 'QR Code not available. Instance may be already connected or still initializing.'
                 });
             }
 

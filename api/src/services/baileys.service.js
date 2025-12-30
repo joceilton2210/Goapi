@@ -156,7 +156,7 @@ class BaileysService {
         const instance = this.instances.get(instanceId);
         
         if (!instance) {
-            throw new Error('Instance not found');
+            return null;
         }
 
         return instance.qrCode();
@@ -166,13 +166,20 @@ class BaileysService {
         const instance = this.instances.get(instanceId);
         
         if (!instance) {
-            throw new Error('Instance not found');
+            return {
+                instanceId,
+                isConnected: false,
+                hasQR: false,
+                exists: false,
+                createdAt: null
+            };
         }
 
         return {
             instanceId,
             isConnected: instance.isConnected(),
             hasQR: !!instance.qrCode(),
+            exists: true,
             createdAt: instance.createdAt
         };
     }
