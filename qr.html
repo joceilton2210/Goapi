@@ -455,6 +455,7 @@
         let qrCodeObj = null;
         let checkConnectionInterval = null;
         let connectionCheckCount = 0;
+        let lastQRCode = null; // Para evitar re-renderizar o mesmo QR
 
         // Função para compartilhar link
         function shareQRLink() {
@@ -548,10 +549,13 @@
                     statusRes.json()
                 ]);
 
+                console.log('Status:', statusData);
+                console.log('QR Data:', qrData);
+
                 // Verificar se já está conectado
                 if (statusData.success && statusData.data.isConnected) {
                     // QR Code foi lido!
-                    updateQRStatus('connected', '✓ QR Code lido com sucesso!');
+                    updateQRStatus('connected', '✓ WhatsApp Conectado!');
                     
                     // Parar verificações
                     if (checkConnectionInterval) {
@@ -559,74 +563,72 @@
                     }
                     
                     // Mostrar alerta de sucesso
-                    showSuccess('WhatsApp conectado com sucesso! Redirecionando em 5 segundos...', 'Conectado!');
+                    showSuccess('WhatsApp conectado com sucesso! Redirecionando...', 'Conectado!');
                     
-                    // Countdown visual
-                    let countdown = 5;
-                    const countdownInterval = setInterval(() => {
-                        countdown--;
-                        if (countdown > 0) {
-                            updateQRStatus('connected', `✓ Conectado! Redirecionando em ${countdown}s...`);
-                        } else {
-                            clearInterval(countdownInterval);
-                            window.location.href = 'instancia.html';
-                        }
-                    }, 1000);
+                    // Redirecionar após 2 segundos
+                    setTimeout(() => {
+                        window.location.href = 'instancia.html';
+                    }, 2000);
                     
                     return;
                 }
 
-                // Mostrar QR Code se disponível
+                // Mostrar QR Code se disponível e diferente do anterior
                 if (qrData.success && qrData.data && qrData.data.qrCode) {
-                    const qrElement = document.getElementById('qrcode');
-                    if (qrElement) {
-                        qrElement.innerHTML = '';
+                    // Só re-renderizar se o QR mudou
+                    if (lastQRCode !== qrData.data.qrCode) {
+                        lastQRCode = qrData.data.qrCode;
                         
-                        // Criar QR Code
-                        const qrCodeDiv = document.createElement('div');
-                        qrCodeDiv.style.position = 'relative';
-                        qrCodeDiv.style.display = 'inline-block';
-                        qrElement.appendChild(qrCodeDiv);
-                        
-                        new QRCode(qrCodeDiv, {
-                            text: qrData.data.qrCode,
-                            width: 250,
-                            height: 250,
-                            colorDark: "#000000",
-                            colorLight: "#ffffff",
-                            correctLevel: QRCode.CorrectLevel.H
-                        });
-                        
-                        // Adicionar logo no centro após um pequeno delay
-                        setTimeout(() => {
-                            const logoOverlay = document.createElement('div');
-                            logoOverlay.style.position = 'absolute';
-                            logoOverlay.style.top = '50%';
-                            logoOverlay.style.left = '50%';
-                            logoOverlay.style.transform = 'translate(-50%, -50%)';
-                            logoOverlay.style.width = '50px';
-                            logoOverlay.style.height = '50px';
-                            logoOverlay.style.backgroundColor = 'white';
-                            logoOverlay.style.borderRadius = '8px';
-                            logoOverlay.style.padding = '5px';
-                            logoOverlay.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
-                            logoOverlay.style.display = 'flex';
-                            logoOverlay.style.alignItems = 'center';
-                            logoOverlay.style.justifyContent = 'center';
+                        const qrElement = document.getElementById('qrcode');
+                        if (qrElement) {
+                            qrElement.innerHTML = '';
                             
-                            const logo = document.createElement('img');
-                            logo.src = 'icone.png';
-                            logo.style.width = '40px';
-                            logo.style.height = '40px';
-                            logo.style.objectFit = 'contain';
-                            logo.alt = 'GO API';
+                            // Criar QR Code
+                            const qrCodeDiv = document.createElement('div');
+                            qrCodeDiv.style.position = 'relative';
+                            qrCodeDiv.style.display = 'inline-block';
+                            qrElement.appendChild(qrCodeDiv);
                             
-                            logoOverlay.appendChild(logo);
-                            qrCodeDiv.appendChild(logoOverlay);
-                        }, 100);
-                        
-                        updateQRStatus('waiting', 'Aguardando leitura do QR Code...');
+                            new QRCode(qrCodeDiv, {
+                                text: qrData.data.qrCode,
+                                width: 250,
+                                height: 250,
+                                colorDark: "#000000",
+                                colorLight: "#ffffff",
+                                correctLevel: QRCode.CorrectLevel.H
+                            });
+                            
+                            // Adicionar logo no centro após um pequeno delay
+                            setTimeout(() => {
+                                const logoOverlay = document.createElement('div');
+                                logoOverlay.style.position = 'absolute';
+                                logoOverlay.style.top = '50%';
+                                logoOverlay.style.left = '50%';
+                                logoOverlay.style.transform = 'translate(-50%, -50%)';
+                                logoOverlay.style.width = '50px';
+                                logoOverlay.style.height = '50px';
+                                logoOverlay.style.backgroundColor = 'white';
+                                logoOverlay.style.borderRadius = '8px';
+                                logoOverlay.style.padding = '5px';
+                                logoOverlay.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+                                logoOverlay.style.display = 'flex';
+                                logoOverlay.style.alignItems = 'center';
+                                logoOverlay.style.justifyContent = 'center';
+                                
+                                const logo = document.createElement('img');
+                                logo.src = 'icone.png';
+                                logo.style.width = '40px';
+                                logo.style.height = '40px';
+                                logo.style.objectFit = 'contain';
+                                logo.alt = 'GO API';
+                                
+                                logoOverlay.appendChild(logo);
+                                qrCodeDiv.appendChild(logoOverlay);
+                            }, 100);
+                        }
                     }
+                    
+                    updateQRStatus('waiting', 'Aguardando leitura do QR Code...');
                 } else {
                     // Se não tem QR, pode estar inicializando ou já conectado
                     if (statusData.data && statusData.data.exists === false) {

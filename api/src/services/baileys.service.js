@@ -39,8 +39,11 @@ class BaileysService {
             const { state, saveCreds } = await usePostgresAuthState(instanceId);
             const { version } = await fetchLatestBaileysVersion();
 
-            let qrCode = null;
-            let isConnected = false;
+            // Criar objeto de estado compartilhado
+            const instanceState = {
+                qrCode: null,
+                isConnected: false
+            };
 
             const sock = makeWASocket({
                 version,
@@ -58,8 +61,10 @@ class BaileysService {
             sock.ev.on('connection.update', async (update) => {
                 const { connection, lastDisconnect, qr } = update;
 
+                logger.info(`Connection update for ${instanceId}: ${connection}`);
+
                 if (qr) {
-                    qrCode = qr;
+                    instanceState.qrCode = qr;
                     qrcode.generate(qr, { small: true });
                     logger.info(`QR Code generated for instance: ${instanceId}`);
                     webhookService.trigger(instanceId, 'qr.updated', { qr });
@@ -70,6 +75,8 @@ class BaileysService {
                     
                     logger.info(`Connection closed for ${instanceId}, reconnecting: ${shouldReconnect}`);
                     webhookService.trigger(instanceId, 'instance.disconnected', { reason: lastDisconnect?.error });
+                    
+                    instanceState.isConnected = false;
                     
                     if (shouldReconnect) {
                         // Não deletar a instância, apenas tentar reconectar
@@ -82,15 +89,20 @@ class BaileysService {
                         this.instances.delete(instanceId);
                         logger.info(`Instance ${instanceId} logged out, removed from memory`);
                     }
-                    
-                    isConnected = false;
                 }
 
                 if (connection === 'open') {
-                    logger.info(`Instance ${instanceId} connected successfully`);
-                    isConnected = true;
-                    qrCode = null;
-                    webhookService.trigger(instanceId, 'instance.connected', { phone: sock.user.id });
+                    logger.info(`✓ Instance ${instanceId} connected successfully! Phone: ${sock.user?.id}`);
+                    instanceState.isConnected = true;
+                    instanceState.qrCode = null;
+                    webhookService.trigger(instanceId, 'instance.connected', { 
+                        phone: sock.user?.id,
+                        name: sock.user?.name 
+                    });
+                }
+
+                if (connection === 'connecting') {
+                    logger.info(`Instance ${instanceId} is connecting...`);
                 }
             });
 
@@ -109,8 +121,8 @@ class BaileysService {
             // Armazenar instância
             this.instances.set(instanceId, {
                 sock,
-                qrCode: () => qrCode,
-                isConnected: () => isConnected,
+                qrCode: () => instanceState.qrCode,
+                isConnected: () => instanceState.isConnected,
                 createdAt: new Date()
             });
 
@@ -119,7 +131,7 @@ class BaileysService {
             return {
                 instanceId,
                 status: 'created',
-                qrCode
+                qrCode: instanceState.qrCode
             };
 
         } catch (error) {
