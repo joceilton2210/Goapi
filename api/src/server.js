@@ -1,10 +1,12 @@
 import express from 'express';
+import { createServer } from 'http';
 import cors from 'cors';
 import config from './config/default.js';
 import logger from './utils/logger.js';
 import { errorHandler } from './middleware/error.middleware.js';
 import { authMiddleware } from './middleware/auth.middleware.js';
 import { initDb } from './config/database.js';
+import socketService from './services/socket.service.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -17,6 +19,10 @@ import messageRoutes from './routes/message.routes.js';
 import webhookRoutes from './routes/webhook.routes.js';
 
 const app = express();
+const httpServer = createServer(app);
+
+// Inicializar Socket.IO
+socketService.initialize(httpServer);
 
 // Middlewares
 app.use(cors());
@@ -42,7 +48,7 @@ app.get('/', (req, res) => {
 app.use(errorHandler);
 
 // Iniciar servidor
-app.listen(config.port, async () => {
+httpServer.listen(config.port, async () => {
     try {
         await initDb();
         logger.info('Database connected and initialized');
@@ -51,6 +57,7 @@ app.listen(config.port, async () => {
     }
     logger.info(`Server running on port ${config.port}`);
     logger.info(`Environment: ${process.env.NODE_ENV}`);
+    logger.info(`WebSocket enabled for real-time updates`);
     logger.info(`Access the web interface at: http://${config.host}:${config.port}/login.html`);
 });
 
@@ -64,3 +71,4 @@ process.on('unhandledRejection', (err) => {
     logger.fatal(err, 'Unhandled Rejection');
     process.exit(1);
 });
+

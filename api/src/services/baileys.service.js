@@ -4,12 +4,14 @@ import makeWASocket, {
     makeCacheableSignalKeyStore
 } from '@whiskeysockets/baileys';
 import { usePostgresAuthState } from '../auth/PostgresAuthState.js';
+import { query } from '../config/database.js';
 import qrcode from 'qrcode-terminal';
 import NodeCache from 'node-cache';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import logger from '../utils/logger.js';
 import webhookService from './webhook.service.js';
+import socketService from './socket.service.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,45 +27,33 @@ class BaileysService {
 
     async createInstance(instanceId) {
         try {
-            // Se já existe e está conectada, retornar
+            // Verificar se já existe em memória
             if (this.instances.has(instanceId)) {
                 const existingInstance = this.instances.get(instanceId);
                 const isConnected = existingInstance.isConnected();
-                
-                logger.info(`Instance ${instanceId} already exists, connected: ${isConnected}`);
-                
-                // Se já está conectada, retornar
-                if (isConnected) {
-                    return {
-                        instanceId,
-                        status: 'already_connected',
-                        qrCode: null
-                    };
-                }
-                
-                // Se não está conectada mas tem QR, retornar o QR
                 const qrCode = existingInstance.qrCode();
-                if (qrCode) {
-                    return {
-                        instanceId,
-                        status: 'already_exists',
-                        qrCode
-                    };
-                }
                 
-                // Se não tem QR e não está conectada, deletar e recriar
-                logger.info(`Instance ${instanceId} exists but not connected and no QR, recreating...`);
-                this.instances.delete(instanceId);
+                logger.info(`Instance ${instanceId} already exists in memory - Connected: ${isConnected}, Has QR: ${!!qrCode}`);
+                
+                return {
+                    instanceId,
+                    status: isConnected ? 'connected' : 'waiting_qr',
+                    qrCode,
+                    isConnected
+                };
             }
 
-            // DB Auth
+            logger.info(`Creating new instance: ${instanceId}`);
+
+            // DB Auth - Carrega credenciais salvas ou cria novas
             const { state, saveCreds } = await usePostgresAuthState(instanceId);
             const { version } = await fetchLatestBaileysVersion();
 
-            // Criar objeto de estado compartilhado
+            // Estado compartilhado da instância
             const instanceState = {
                 qrCode: null,
-                isConnected: false
+                isConnected: false,
+                connectionStatus: 'initializing'
             };
 
             const sock = makeWASocket({
@@ -75,88 +65,140 @@ class BaileysService {
                 },
                 msgRetryCounterCache,
                 generateHighQualityLinkPreview: true,
-                printQRInTerminal: false
+                printQRInTerminal: false,
+                connectTimeoutMs: 60000,
+                defaultQueryTimeoutMs: 60000,
+                keepAliveIntervalMs: 30000
             });
 
             // Event handlers
             sock.ev.on('connection.update', async (update) => {
                 const { connection, lastDisconnect, qr } = update;
 
-                logger.info(`Connection update for ${instanceId}: ${connection}`);
+                logger.info(`[${instanceId}] Connection update: ${connection || 'no-change'}`);
 
+                // QR Code gerado
                 if (qr) {
                     instanceState.qrCode = qr;
+                    instanceState.connectionStatus = 'qr_generated';
                     qrcode.generate(qr, { small: true });
-                    logger.info(`QR Code generated for instance: ${instanceId}`);
+                    logger.info(`[${instanceId}] ✓ QR Code generated`);
+                    
+                    // Emitir via WebSocket em tempo real
+                    socketService.emitQRCode(instanceId, qr);
+                    socketService.emitConnectionStatus(instanceId, 'qr_generated');
+                    
                     webhookService.trigger(instanceId, 'qr.updated', { qr });
                 }
 
+                // Conexão fechada
                 if (connection === 'close') {
-                    const shouldReconnect = (lastDisconnect?.error)?.output?.statusCode !== DisconnectReason.loggedOut;
+                    const statusCode = lastDisconnect?.error?.output?.statusCode;
+                    const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
                     
-                    logger.info(`Connection closed for ${instanceId}, reconnecting: ${shouldReconnect}`);
-                    webhookService.trigger(instanceId, 'instance.disconnected', { reason: lastDisconnect?.error });
+                    logger.warn(`[${instanceId}] Connection closed - Status: ${statusCode}, Reconnect: ${shouldReconnect}`);
                     
                     instanceState.isConnected = false;
+                    instanceState.connectionStatus = 'disconnected';
+                    
+                    webhookService.trigger(instanceId, 'instance.disconnected', { 
+                        reason: lastDisconnect?.error?.message,
+                        statusCode 
+                    });
                     
                     if (shouldReconnect) {
-                        // Não deletar a instância, apenas tentar reconectar
-                        setTimeout(() => {
-                            logger.info(`Attempting to reconnect instance ${instanceId}`);
-                            this.createInstance(instanceId);
+                        // NUNCA deletar a instância - apenas reconectar
+                        instanceState.connectionStatus = 'reconnecting';
+                        logger.info(`[${instanceId}] Scheduling reconnection in 5 seconds...`);
+                        
+                        setTimeout(async () => {
+                            try {
+                                logger.info(`[${instanceId}] Attempting reconnection...`);
+                                // Não chamar createInstance novamente, apenas reconectar o socket
+                                await sock.ws.close();
+                            } catch (error) {
+                                logger.error(`[${instanceId}] Reconnection error:`, error);
+                            }
                         }, 5000);
                     } else {
-                        // Só deletar se foi logout explícito
+                        // Logout explícito - APENAS AQUI deletamos
+                        logger.warn(`[${instanceId}] Explicit logout detected - removing from memory`);
                         this.instances.delete(instanceId);
-                        logger.info(`Instance ${instanceId} logged out, removed from memory`);
                     }
                 }
 
-                if (connection === 'open') {
-                    logger.info(`✓ Instance ${instanceId} connected successfully! Phone: ${sock.user?.id}`);
-                    instanceState.isConnected = true;
-                    instanceState.qrCode = null;
-                    webhookService.trigger(instanceId, 'instance.connected', { 
-                        phone: sock.user?.id,
-                        name: sock.user?.name 
-                    });
+                // Conectando
+                if (connection === 'connecting') {
+                    instanceState.connectionStatus = 'connecting';
+                    logger.info(`[${instanceId}] Connecting to WhatsApp...`);
+                    
+                    // Emitir via WebSocket
+                    socketService.emitConnectionStatus(instanceId, 'connecting');
                 }
 
-                if (connection === 'connecting') {
-                    logger.info(`Instance ${instanceId} is connecting...`);
+                // Conectado com sucesso
+                if (connection === 'open') {
+                    instanceState.isConnected = true;
+                    instanceState.qrCode = null;
+                    instanceState.connectionStatus = 'connected';
+                    
+                    const phoneNumber = sock.user?.id || 'unknown';
+                    const userName = sock.user?.name || 'Unknown';
+                    
+                    logger.info(`[${instanceId}] ✓✓✓ CONNECTED SUCCESSFULLY ✓✓✓`);
+                    logger.info(`[${instanceId}] Phone: ${phoneNumber}`);
+                    logger.info(`[${instanceId}] Name: ${userName}`);
+                    
+                    // Emitir via WebSocket IMEDIATAMENTE
+                    socketService.emitConnected(instanceId, phoneNumber, userName);
+                    socketService.emitConnectionStatus(instanceId, 'connected', { phoneNumber, userName });
+                    
+                    webhookService.trigger(instanceId, 'instance.connected', { 
+                        phone: phoneNumber,
+                        name: userName,
+                        timestamp: new Date().toISOString()
+                    });
                 }
             });
 
+            // Mensagens recebidas
             sock.ev.on('messages.upsert', async (m) => {
                 if (m.type === 'notify') {
                     for (const msg of m.messages) {
                         if (!msg.key.fromMe) {
+                            logger.debug(`[${instanceId}] Message received from ${msg.key.remoteJid}`);
                             webhookService.trigger(instanceId, 'message.received', msg);
                         }
                     }
                 }
             });
 
-            sock.ev.on('creds.update', saveCreds);
+            // Salvar credenciais quando atualizadas
+            sock.ev.on('creds.update', async () => {
+                logger.debug(`[${instanceId}] Credentials updated, saving to database...`);
+                await saveCreds();
+            });
 
-            // Armazenar instância
+            // Armazenar instância em memória
             this.instances.set(instanceId, {
                 sock,
                 qrCode: () => instanceState.qrCode,
                 isConnected: () => instanceState.isConnected,
+                getStatus: () => instanceState.connectionStatus,
                 createdAt: new Date()
             });
 
-            logger.info(`Instance ${instanceId} created`);
+            logger.info(`[${instanceId}] Instance created and stored in memory`);
 
             return {
                 instanceId,
                 status: 'created',
-                qrCode: instanceState.qrCode
+                qrCode: instanceState.qrCode,
+                isConnected: instanceState.isConnected
             };
 
         } catch (error) {
-            logger.error(`Error creating instance ${instanceId}:`, error);
+            logger.error(`[${instanceId}] Error creating instance:`, error);
             throw error;
         }
     }
@@ -183,16 +225,27 @@ class BaileysService {
         const instance = this.instances.get(instanceId);
         
         if (!instance) {
+            logger.warn(`[${instanceId}] Instance not found for deletion`);
             throw new Error('Instance not found');
         }
 
         try {
+            logger.info(`[${instanceId}] User requested deletion - logging out...`);
+            
+            // Fazer logout do WhatsApp
             await instance.sock.logout();
+            
+            // Remover da memória
             this.instances.delete(instanceId);
-            logger.info(`Instance ${instanceId} deleted`);
+            
+            // Limpar credenciais do banco de dados
+            await query('DELETE FROM auth_sessions WHERE id = $1', [instanceId]);
+            
+            logger.info(`[${instanceId}] ✓ Instance deleted successfully`);
+            
             return true;
         } catch (error) {
-            logger.error(`Error deleting instance ${instanceId}:`, error);
+            logger.error(`[${instanceId}] Error deleting instance:`, error);
             throw error;
         }
     }
@@ -216,15 +269,21 @@ class BaileysService {
                 isConnected: false,
                 hasQR: false,
                 exists: false,
+                connectionStatus: 'not_found',
                 createdAt: null
             };
         }
 
+        const isConnected = instance.isConnected();
+        const hasQR = !!instance.qrCode();
+        const connectionStatus = instance.getStatus ? instance.getStatus() : 'unknown';
+
         return {
             instanceId,
-            isConnected: instance.isConnected(),
-            hasQR: !!instance.qrCode(),
+            isConnected,
+            hasQR,
             exists: true,
+            connectionStatus,
             createdAt: instance.createdAt
         };
     }

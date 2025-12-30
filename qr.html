@@ -48,6 +48,8 @@
     <!-- Global Config -->
     <script src="assets/js/config.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- Socket.IO Client -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <!-- Custom Alert System -->
     <script src="assets/js/alert.js"></script>
     <script id="tailwind-config">
@@ -470,9 +472,127 @@
         }
 
         let qrCodeObj = null;
-        let checkConnectionInterval = null;
-        let connectionCheckCount = 0;
-        let lastQRCode = null; // Para evitar re-renderizar o mesmo QR
+        let socket = null;
+        let lastQRCode = null;
+
+        // Conectar ao WebSocket
+        function connectWebSocket() {
+            const socketUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                ? 'http://localhost:4000'
+                : window.location.origin;
+            
+            console.log('Connecting to WebSocket:', socketUrl);
+            socket = io(socketUrl, {
+                transports: ['websocket', 'polling']
+            });
+
+            socket.on('connect', () => {
+                console.log('✓ WebSocket connected!');
+                // Inscrever-se para receber atualizações desta instância
+                socket.emit('subscribe', instanceId);
+                updateQRStatus('waiting', 'Conectado ao servidor...');
+            });
+
+            socket.on('disconnect', () => {
+                console.log('✗ WebSocket disconnected');
+                updateQRStatus('error', 'Conexão perdida. Reconectando...');
+            });
+
+            // QR Code atualizado em tempo real
+            socket.on('qr:updated', (data) => {
+                console.log('📱 QR Code received via WebSocket');
+                renderQRCode(data.qrCode);
+                updateQRStatus('waiting', 'Aguardando leitura do QR Code...');
+            });
+
+            // Status de conexão atualizado
+            socket.on('connection:status', (data) => {
+                console.log('📊 Connection status:', data.status);
+                
+                if (data.status === 'connecting') {
+                    updateQRStatus('waiting', 'Conectando ao WhatsApp...');
+                } else if (data.status === 'qr_generated') {
+                    updateQRStatus('waiting', 'QR Code gerado! Escaneie agora.');
+                }
+            });
+
+            // CONECTADO! Em tempo real
+            socket.on('connection:success', (data) => {
+                console.log('✓✓✓ CONNECTED VIA WEBSOCKET!', data);
+                updateQRStatus('connected', '✓ WhatsApp Conectado!');
+                
+                showSuccess(`WhatsApp conectado!\nTelefone: ${data.phoneNumber}\nRedirecionando...`, 'Sucesso!');
+                
+                // Redirecionar imediatamente
+                setTimeout(() => {
+                    socket.emit('unsubscribe', instanceId);
+                    socket.disconnect();
+                    window.location.href = 'instancia.html';
+                }, 1500);
+            });
+
+            // Desconectado
+            socket.on('connection:disconnected', (data) => {
+                console.log('✗ Disconnected:', data.reason);
+                updateQRStatus('error', 'Desconectado. Tentando reconectar...');
+            });
+        }
+
+        // Renderizar QR Code
+        function renderQRCode(qrCodeData) {
+            if (lastQRCode === qrCodeData) return; // Evitar re-render
+            lastQRCode = qrCodeData;
+
+            const qrElement = document.getElementById('qrcode');
+            if (!qrElement) return;
+
+            qrElement.innerHTML = '';
+            
+            const qrCodeDiv = document.createElement('div');
+            qrCodeDiv.style.position = 'relative';
+            qrCodeDiv.style.display = 'inline-block';
+            qrElement.appendChild(qrCodeDiv);
+            
+            new QRCode(qrCodeDiv, {
+                text: qrCodeData,
+                width: 250,
+                height: 250,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            
+            // Logo no centro
+            setTimeout(() => {
+                const logoOverlay = document.createElement('div');
+                logoOverlay.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:50px;height:50px;background:white;border-radius:8px;padding:5px;box-shadow:0 2px 8px rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:center';
+                
+                const logo = document.createElement('img');
+                logo.src = 'icone.png';
+                logo.style.cssText = 'width:40px;height:40px;object-fit:contain';
+                logo.alt = 'GO API';
+                
+                logoOverlay.appendChild(logo);
+                qrCodeDiv.appendChild(logoOverlay);
+            }, 100);
+        }
+
+        // Buscar QR inicial (fallback)
+        async function fetchInitialQR() {
+            try {
+                const response = await fetch(`${API_CONFIG.baseUrl}/instances/${instanceId}/qr`, {
+                    headers: { 'x-api-key': API_CONFIG.apiKey }
+                });
+                const data = await response.json();
+
+                if (data.success && data.data && data.data.qrCode) {
+                    renderQRCode(data.data.qrCode);
+                    updateQRStatus('waiting', 'Aguardando leitura do QR Code...');
+                }
+            } catch (error) {
+                console.error('Error fetching initial QR:', error);
+            }
+        }
 
         // Função para compartilhar link
         function shareQRLink() {
@@ -549,121 +669,6 @@
             }
         }
 
-        async function updateQR() {
-            try {
-                // Buscar QR Code e Status em paralelo para ser mais rápido
-                const [qrRes, statusRes] = await Promise.all([
-                    fetch(`${API_CONFIG.baseUrl}/instances/${instanceId}/qr`, {
-                        headers: { 'x-api-key': API_CONFIG.apiKey }
-                    }),
-                    fetch(`${API_CONFIG.baseUrl}/instances/${instanceId}/status`, {
-                        headers: { 'x-api-key': API_CONFIG.apiKey }
-                    })
-                ]);
-
-                const [qrData, statusData] = await Promise.all([
-                    qrRes.json(),
-                    statusRes.json()
-                ]);
-
-                console.log('Status:', statusData);
-                console.log('QR Data:', qrData);
-                console.log('isConnected:', statusData.data?.isConnected);
-                console.log('hasQR:', statusData.data?.hasQR);
-                console.log('exists:', statusData.data?.exists);
-
-                // Verificar se já está conectado
-                if (statusData.success && statusData.data.isConnected === true) {
-                    console.log('✓ CONECTADO! Redirecionando...');
-                    // QR Code foi lido!
-                    updateQRStatus('connected', '✓ WhatsApp Conectado!');
-                    
-                    // Parar verificações
-                    if (checkConnectionInterval) {
-                        clearInterval(checkConnectionInterval);
-                    }
-                    
-                    // Mostrar alerta de sucesso
-                    showSuccess('WhatsApp conectado com sucesso! Redirecionando...', 'Conectado!');
-                    
-                    // Redirecionar após 2 segundos
-                    setTimeout(() => {
-                        window.location.href = 'instancia.html';
-                    }, 2000);
-                    
-                    return;
-                }
-
-                // Mostrar QR Code se disponível e diferente do anterior
-                if (qrData.success && qrData.data && qrData.data.qrCode) {
-                    // Só re-renderizar se o QR mudou
-                    if (lastQRCode !== qrData.data.qrCode) {
-                        lastQRCode = qrData.data.qrCode;
-                        
-                        const qrElement = document.getElementById('qrcode');
-                        if (qrElement) {
-                            qrElement.innerHTML = '';
-                            
-                            // Criar QR Code
-                            const qrCodeDiv = document.createElement('div');
-                            qrCodeDiv.style.position = 'relative';
-                            qrCodeDiv.style.display = 'inline-block';
-                            qrElement.appendChild(qrCodeDiv);
-                            
-                            new QRCode(qrCodeDiv, {
-                                text: qrData.data.qrCode,
-                                width: 250,
-                                height: 250,
-                                colorDark: "#000000",
-                                colorLight: "#ffffff",
-                                correctLevel: QRCode.CorrectLevel.H
-                            });
-                            
-                            // Adicionar logo no centro após um pequeno delay
-                            setTimeout(() => {
-                                const logoOverlay = document.createElement('div');
-                                logoOverlay.style.position = 'absolute';
-                                logoOverlay.style.top = '50%';
-                                logoOverlay.style.left = '50%';
-                                logoOverlay.style.transform = 'translate(-50%, -50%)';
-                                logoOverlay.style.width = '50px';
-                                logoOverlay.style.height = '50px';
-                                logoOverlay.style.backgroundColor = 'white';
-                                logoOverlay.style.borderRadius = '8px';
-                                logoOverlay.style.padding = '5px';
-                                logoOverlay.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
-                                logoOverlay.style.display = 'flex';
-                                logoOverlay.style.alignItems = 'center';
-                                logoOverlay.style.justifyContent = 'center';
-                                
-                                const logo = document.createElement('img');
-                                logo.src = 'icone.png';
-                                logo.style.width = '40px';
-                                logo.style.height = '40px';
-                                logo.style.objectFit = 'contain';
-                                logo.alt = 'GO API';
-                                
-                                logoOverlay.appendChild(logo);
-                                qrCodeDiv.appendChild(logoOverlay);
-                            }, 100);
-                        }
-                    }
-                    
-                    updateQRStatus('waiting', 'Aguardando leitura do QR Code...');
-                } else {
-                    // Se não tem QR, pode estar inicializando ou já conectado
-                    if (statusData.data && statusData.data.exists === false) {
-                        updateQRStatus('waiting', 'Criando instância... Aguarde...');
-                    } else {
-                        updateQRStatus('waiting', 'Gerando QR Code...');
-                    }
-                }
-            } catch (error) {
-                console.error('Erro ao buscar QR/Status:', error);
-                updateQRStatus('error', 'Erro de conexão com API. Tentando novamente...');
-            }
-        }
-
         // Event listeners
         const shareBtn = document.getElementById('share-qr-btn');
         if (shareBtn) {
@@ -674,15 +679,13 @@
         if (reloadBtn) {
             reloadBtn.addEventListener('click', () => {
                 updateQRStatus('waiting', 'Recarregando...');
-                updateQR();
+                fetchInitialQR();
             });
         }
 
-        // Primeira chamada imediata
-        updateQR();
-        
-        // Verificar conexão a cada 1 segundo (mais rápido para detectar leitura)
-        checkConnectionInterval = setInterval(updateQR, 1000);
+        // Inicializar WebSocket e buscar QR inicial
+        connectWebSocket();
+        fetchInitialQR();
     </script>
 </body>
 
