@@ -37,6 +37,11 @@
         },
         {
           "type": "volume",
+          "name": "baileys_auth",
+          "mountPath": "/app/baileys_auth_info"
+        },
+        {
+          "type": "volume",
           "name": "uploads",
           "mountPath": "/app/uploads"
         },

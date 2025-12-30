@@ -14,25 +14,19 @@ RUN apk add --no-cache \
 
 WORKDIR /app
 
-# Copiar package.json da API
-COPY api/package*.json ./
+# Copiar TUDO do repositório primeiro
+COPY . .
+
+# Entrar na pasta da API
+WORKDIR /app/api
 
 # Instalar TODAS as dependências (incluindo Socket.IO)
 RUN npm install --production && \
     npm install socket.io@^4.7.2 && \
     npm cache clean --force
 
-# Copiar código da API
-COPY api/ .
-
-# Criar pasta public e copiar Frontend
-RUN mkdir -p public
-COPY *.html public/ 2>/dev/null || true
-COPY *.png public/ 2>/dev/null || true
-COPY assets public/assets/ 2>/dev/null || true
-
 # Criar diretórios necessários
-RUN mkdir -p sessions uploads logs
+RUN mkdir -p sessions uploads logs baileys_auth_info
 
 # Dar permissão de execução ao script
 RUN chmod +x start.sh
@@ -44,7 +38,7 @@ EXPOSE 4000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   CMD node -e "require('http').get('http://localhost:4000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
 
-# Comando de inicialização
+# Comando de inicialização (já estamos em /app/api)
 CMD ["./start.sh"]
 
 

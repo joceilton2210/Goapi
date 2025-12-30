@@ -22,9 +22,10 @@ services:
       - postgres
       - redis
     volumes:
-      - sessions:/app/sessions
-      - uploads:/app/uploads
-      - logs:/app/logs
+      - sessions:/app/api/sessions
+      - uploads:/app/api/uploads
+      - logs:/app/api/logs
+      - baileys_auth:/app/api/baileys_auth_info
 
   postgres:
     image: postgres:15-alpine
@@ -46,6 +47,7 @@ volumes:
   sessions:
   uploads:
   logs:
+  baileys_auth:
   pgdata:
   redisdata:
 
