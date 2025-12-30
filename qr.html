@@ -238,28 +238,13 @@
                                     <div class="relative group">
                                         <!-- QR Container -->
                                         <div class="bg-white p-4 rounded-lg shadow-sm">
-                                            <img alt="QR Code for WhatsApp Connection"
-                                                class="w-[250px] h-[250px] object-contain opacity-100 transition-opacity duration-300"
-                                                data-alt="Black and white QR code pattern for scanning"
-                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnoG-LqCFy9lxWlZQCk1UyztO3tjqO1w6Oyi8GWk7agN5x4OIVWJpc3xpZdRvp3wR7FECImDxIkeGHfVSfi0_uyKDwmIXPgbM6hHOpp5NKfPS4Sie6g0mBjxDtaPurYz_qE-f50dnISemqewGJh8Ox_3pQ5n1_JbkaivsxjjsYKNgJZO8xW8cQgPzXLpbJUTgyt_s1a-0hqU6V4KndfAM4OIyXIhn67ymH7QCie9HcfhePVOFDcm3mSyU_LTNPN7hPEvVPWdBNwBxT" />
-                                            <!-- Logo Overlay -->
-                                            <div
-                                                class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                                <div class="bg-white p-1 rounded-full shadow-sm">
-                                                    <div
-                                                        class="size-10 bg-[#25D366] rounded-full flex items-center justify-center text-white">
-                                                        <span class="material-symbols-outlined text-[24px]">call</span>
-                                                    </div>
+                                            <div id="qrcode" class="flex items-center justify-center w-[250px] h-[250px]">
+                                                <div class="text-center">
+                                                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-3"></div>
+                                                    <p class="text-gray-600 dark:text-gray-400 text-sm">Carregando QR Code...</p>
                                                 </div>
                                             </div>
                                         </div>
-                                        <!-- Expired Overlay (Hidden by default, shown for design demo purposes on hover/state) -->
-                                        <!-- <div class="absolute inset-0 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center gap-3 rounded-lg opacity-0 hover:opacity-100 transition-opacity duration-300 cursor-pointer">
-                                        <div class="bg-primary/10 p-3 rounded-full text-primary">
-                                            <span class="material-symbols-outlined">refresh</span>
-                                        </div>
-                                        <p class="text-sm font-bold text-[#111722]">Click to reload</p>
-                                    </div> -->
                                     </div>
                                     <div class="flex flex-col items-center gap-3 w-full">
                                         <div id="qr-status" class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
@@ -457,7 +442,6 @@
         // QR Code Logic
         const urlParams = new URLSearchParams(window.location.search);
         const instanceId = urlParams.get('instance');
-        const qrContainer = document.querySelector('.bg-white.p-4.rounded-lg.shadow-sm'); // Container da imagem do QR
         
         if (!instanceId) {
             showError('Instância não especificada', 'Erro');
@@ -466,8 +450,6 @@
             }, 2000);
         } else {
             document.querySelector('[data-i18n="page-title"]').textContent = `Conectar ${instanceId}`;
-            // Substituir a imagem estática pela div onde o qrcode.js vai renderizar
-            qrContainer.innerHTML = '<div id="qrcode"></div>';
         }
 
         let qrCodeObj = null;
