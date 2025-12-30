@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: https://github.com/joceilton2210/Goapi.git#main
+      dockerfile: api/Dockerfile
+    image: go-api-whatsapp
+    restart: always
+    ports:
+      - "80:4000"
+    environment:
+      - PORT=4000
+      - NODE_ENV=production
+      - API_KEY=change-this-key
+      - DB_HOST=postgres
+      - DB_USER=whatsapp
+      - DB_PASS=whatsapp_password
+      - DB_NAME=whatsapp
+      - REDIS_HOST=redis
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - uploads:/app/uploads
+      - logs:/app/logs
+
+  postgres:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=whatsapp
+      - POSTGRES_PASSWORD=whatsapp_password
+      - POSTGRES_DB=whatsapp
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:alpine
+    restart: always
+    volumes:
+      - redisdata:/data
+
+volumes:
+  uploads:
+  logs:
+  pgdata:
+  redisdata:

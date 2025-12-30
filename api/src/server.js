@@ -4,6 +4,7 @@ import config from './config/default.js';
 import logger from './utils/logger.js';
 import { errorHandler } from './middleware/error.middleware.js';
 import { authMiddleware } from './middleware/auth.middleware.js';
+import { initDb } from './config/database.js'; // Import DB Init
 
 // Rotas
 import instanceRoutes from './routes/instance.routes.js';
@@ -38,7 +39,13 @@ app.use('/api/webhooks', authMiddleware, webhookRoutes);
 app.use(errorHandler);
 
 // Iniciar servidor
-app.listen(config.port, () => {
+app.listen(config.port, async () => {
+    try {
+        await initDb();
+        logger.info('Database connected and initialized');
+    } catch (e) {
+        logger.error('Failed to init DB', e);
+    }
     logger.info(`Server running on port ${config.port}`);
     logger.info(`Environment: ${process.env.NODE_ENV}`);
 });

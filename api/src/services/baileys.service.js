@@ -1,9 +1,9 @@
 import makeWASocket, {
     DisconnectReason,
-    useMultiFileAuthState,
     fetchLatestBaileysVersion,
     makeCacheableSignalKeyStore
 } from '@whiskeysockets/baileys';
+import { usePostgresAuthState } from '../auth/PostgresAuthState.js';
 import { Boom } from '@hapi/boom';
 import qrcode from 'qrcode-terminal';
 import NodeCache from 'node-cache';
@@ -30,8 +30,8 @@ class BaileysService {
                 throw new Error('Instance already exists');
             }
 
-            const sessionPath = path.join(__dirname, '../../sessions', instanceId);
-            const { state, saveCreds } = await useMultiFileAuthState(sessionPath);
+            // DB Auth
+            const { state, saveCreds } = await usePostgresAuthState(instanceId);
             const { version } = await fetchLatestBaileysVersion();
 
             let qrCode = null;
