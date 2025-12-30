@@ -45,6 +45,7 @@
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
         rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Global Config -->
     <script src="assets/js/config.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <!-- Custom Alert System -->
@@ -261,19 +262,24 @@
                                     </div> -->
                                     </div>
                                     <div class="flex flex-col items-center gap-3 w-full">
-                                        <div class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                                        <div id="qr-status" class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
                                             <span class="relative flex h-3 w-3">
                                                 <span
                                                     class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                                                 <span
                                                     class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
                                             </span>
-                                            <p class="text-sm font-medium">Waiting for scan...</p>
+                                            <p class="text-sm font-medium">Aguardando leitura...</p>
                                         </div>
-                                        <button
+                                        <button id="reload-qr-btn"
                                             class="w-full flex cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-10 px-4 bg-primary text-slate-900 text-sm font-bold leading-normal hover:bg-white hover:text-slate-900 transition-all shadow-md shadow-primary/20">
                                             <span class="material-symbols-outlined text-[18px]">refresh</span>
-                                            <span class="truncate" data-i18n="reload-qr">Reload QR Code</span>
+                                            <span class="truncate" data-i18n="reload-qr">Recarregar QR Code</span>
+                                        </button>
+                                        <button id="share-qr-btn"
+                                            class="w-full flex cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-10 px-4 bg-blue-600 text-white text-sm font-bold leading-normal hover:bg-blue-700 transition-all shadow-md">
+                                            <span class="material-symbols-outlined text-[18px]">share</span>
+                                            <span class="truncate">Compartilhar Link</span>
                                         </button>
                                     </div>
                                 </div>
@@ -440,8 +446,11 @@
             window.location.href = 'login.html';
         }
         
-        const API_CONFIG = {
-            baseUrl: 'http://localhost:4000/api',
+        // Usar configuração global
+        const API_CONFIG = window.GO_API_CONFIG || {
+            baseUrl: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                ? 'http://localhost:4000/api'
+                : `${window.location.protocol}//${window.location.host}/api`,
             apiKey: 'change-this-key'
         };
 
@@ -462,6 +471,83 @@
         }
 
         let qrCodeObj = null;
+        let checkConnectionInterval = null;
+        let connectionCheckCount = 0;
+
+        // Função para compartilhar link
+        function shareQRLink() {
+            const currentUrl = window.location.href;
+            
+            // Tentar usar a API de compartilhamento nativa
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Conectar WhatsApp - GO API',
+                    text: `Conecte sua instância ${instanceId} ao WhatsApp`,
+                    url: currentUrl
+                }).then(() => {
+                    showSuccess('Link compartilhado com sucesso!');
+                }).catch((error) => {
+                    if (error.name !== 'AbortError') {
+                        copyToClipboard(currentUrl);
+                    }
+                });
+            } else {
+                // Fallback: copiar para clipboard
+                copyToClipboard(currentUrl);
+            }
+        }
+
+        function copyToClipboard(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showSuccess('Link copiado para a área de transferência!', 'Sucesso');
+                }).catch(() => {
+                    fallbackCopyToClipboard(text);
+                });
+            } else {
+                fallbackCopyToClipboard(text);
+            }
+        }
+
+        function fallbackCopyToClipboard(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showSuccess('Link copiado para a área de transferência!', 'Sucesso');
+            } catch (err) {
+                showError('Não foi possível copiar o link', 'Erro');
+            }
+            document.body.removeChild(textArea);
+        }
+
+        // Atualizar status visual
+        function updateQRStatus(status, message) {
+            const statusEl = document.getElementById('qr-status');
+            if (!statusEl) return;
+
+            if (status === 'waiting') {
+                statusEl.innerHTML = '<span class="relative flex h-3 w-3">' +
+                    '<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>' +
+                    '<span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>' +
+                    '</span>' +
+                    '<p class="text-sm font-medium">' + message + '</p>';
+            } else if (status === 'connected') {
+                statusEl.innerHTML = '<span class="relative flex h-3 w-3">' +
+                    '<span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>' +
+                    '</span>' +
+                    '<p class="text-sm font-medium text-green-600 dark:text-green-400">' + message + '</p>';
+            } else if (status === 'error') {
+                statusEl.innerHTML = '<span class="relative flex h-3 w-3">' +
+                    '<span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>' +
+                    '</span>' +
+                    '<p class="text-sm font-medium text-red-600 dark:text-red-400">' + message + '</p>';
+            }
+        }
 
         async function updateQR() {
             try {
@@ -472,10 +558,29 @@
                 const statusData = await statusRes.json();
 
                 if (statusData.success && statusData.data.isConnected) {
-                    showSuccess('Instância conectada com sucesso! Redirecionando...', 'Conectado!');
-                    setTimeout(() => {
-                        window.location.href = 'instancia.html';
-                    }, 2000);
+                    // QR Code foi lido!
+                    updateQRStatus('connected', '✓ QR Code lido com sucesso!');
+                    
+                    // Parar verificações
+                    if (checkConnectionInterval) {
+                        clearInterval(checkConnectionInterval);
+                    }
+                    
+                    // Mostrar alerta de sucesso
+                    showSuccess('WhatsApp conectado com sucesso! Esta página será fechada em 10 segundos...', 'Conectado!');
+                    
+                    // Countdown visual
+                    let countdown = 10;
+                    const countdownInterval = setInterval(() => {
+                        countdown--;
+                        if (countdown > 0) {
+                            updateQRStatus('connected', `✓ Conectado! Fechando em ${countdown}s...`);
+                        } else {
+                            clearInterval(countdownInterval);
+                            window.location.href = 'instancia.html';
+                        }
+                    }, 1000);
+                    
                     return;
                 }
 
@@ -487,27 +592,45 @@
 
                 if (qrData.success && qrData.data.qrCode) {
                     const qrElement = document.getElementById('qrcode');
-                    qrElement.innerHTML = ''; // Limpar anterior
-                    
-                    // Renderizar QR novo
-                    new QRCode(qrElement, {
-                        text: qrData.data.qrCode,
-                        width: 250,
-                        height: 250,
-                        colorDark : "#000000",
-                        colorLight : "#ffffff",
-                        correctLevel : QRCode.CorrectLevel.H
-                    });
-                    
-                    // Remover loading state visualmente se existir
+                    if (qrElement) {
+                        qrElement.innerHTML = '';
+                        
+                        new QRCode(qrElement, {
+                            text: qrData.data.qrCode,
+                            width: 250,
+                            height: 250,
+                            colorDark: "#000000",
+                            colorLight: "#ffffff",
+                            correctLevel: QRCode.CorrectLevel.H
+                        });
+                        
+                        updateQRStatus('waiting', 'Aguardando leitura...');
+                    }
+                } else {
+                    updateQRStatus('error', 'Erro ao gerar QR Code');
                 }
             } catch (error) {
                 console.error('Erro ao buscar QR/Status:', error);
+                updateQRStatus('error', 'Erro de conexão com API');
             }
         }
 
-        // Poll a cada 5 segundos
-        setInterval(updateQR, 5000);
+        // Event listeners
+        const shareBtn = document.getElementById('share-qr-btn');
+        if (shareBtn) {
+            shareBtn.addEventListener('click', shareQRLink);
+        }
+
+        const reloadBtn = document.getElementById('reload-qr-btn');
+        if (reloadBtn) {
+            reloadBtn.addEventListener('click', () => {
+                updateQRStatus('waiting', 'Recarregando...');
+                updateQR();
+            });
+        }
+
+        // Verificar conexão a cada 3 segundos (mais rápido para detectar leitura)
+        checkConnectionInterval = setInterval(updateQR, 3000);
         updateQR(); // Primeira chamada imediata
     </script>
 </body>

@@ -47,6 +47,8 @@
         rel="stylesheet" />
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Global Config -->
+    <script src="assets/js/config.js"></script>
     <!-- Custom Alert System -->
     <script src="assets/js/alert.js"></script>
     <!-- Tailwind Configuration -->
@@ -467,8 +469,11 @@
             window.location.href = 'login.html';
         }
 
-        const API_CONFIG = {
-            baseUrl: 'http://localhost:4000/api',
+        // Usar configuração global
+        const API_CONFIG = window.GO_API_CONFIG || {
+            baseUrl: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                ? 'http://localhost:4000/api'
+                : `${window.location.protocol}//${window.location.host}/api`,
             apiKey: 'change-this-key'
         };
 

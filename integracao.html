@@ -434,7 +434,7 @@ Eventos Selecionados:
     ];
 
     curl_setopt_array(<span class="token-property">$curl</span>, [
-        CURLOPT_URL => <span class="token-string">"http://localhost:4000/api/messages/MINHA_INSTANCIA/send-text"</span>,
+        CURLOPT_URL => <span class="token-string">"https://SEU-DOMINIO.com/api/messages/MINHA_INSTANCIA/send-text"</span>,
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_CUSTOMREQUEST => <span class="token-string">"POST"</span>,
         CURLOPT_POSTFIELDS => json_encode(<span class="token-property">$dados</span>),
@@ -481,7 +481,7 @@ Eventos Selecionados:
 <span class="token-keyword">async function</span> sendMsg() {
   <span class="token-keyword">try</span> {
     <span class="token-keyword">const</span> response = <span class="token-keyword">await</span> axios.post(
-      <span class="token-string">'http://localhost:4000/api/messages/MINHA_INSTANCIA/send-text'</span>,
+      <span class="token-string">'https://SEU-DOMINIO.com/api/messages/MINHA_INSTANCIA/send-text'</span>,
       {
         number: <span class="token-string">'5511999999999'</span>,
         message: <span class="token-string">'Olá via Node.js!'</span>
