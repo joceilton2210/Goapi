@@ -12,7 +12,7 @@ git init
 git add .
 git commit -m "Primeira versão estável"
 git branch -M main
-git remote add origin https://github.com/SEU_USUARIO/go-api-whatsapp.git
+git remote add origin https://github.com/joceilton2210/Goapi.git
 git push -u origin main
 ```
 
@@ -34,7 +34,7 @@ sudo apt install -y git docker.io docker-compose-plugin
 cd /home
 
 # Clone seu projeto (Ele vai pedir usuário e senha/token do GitHub)
-git clone https://github.com/SEU_USUARIO/go-api-whatsapp.git
+git clone https://github.com/joceilton2210/Goapi.git
 
 # Entre na pasta
 cd go-api-whatsapp
