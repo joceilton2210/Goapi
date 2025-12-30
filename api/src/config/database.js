@@ -24,14 +24,22 @@ export const query = async (text, params) => {
     return res;
 };
 
-export const getClient = async () => {
-    const client = await pool.connect();
-    return client;
+export const getClient = async (retries = 5, delay = 5000) => {
+    for (let i = 0; i < retries; i++) {
+        try {
+            const client = await pool.connect();
+            return client;
+        } catch (err) {
+            if (i === retries - 1) throw err;
+            logger.warn(`Database connection failed, retrying in ${delay/1000}s... (${i + 1}/${retries})`);
+            await new Promise(res => setTimeout(res, delay));
+        }
+    }
 };
 
 // Initialize DB Tables
 export const initDb = async () => {
-    const client = await pool.connect();
+    const client = await getClient(10, 3000); // Try for 30 seconds
     try {
         await client.query('BEGIN');
         

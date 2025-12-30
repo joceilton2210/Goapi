@@ -47,6 +47,8 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="assets/js/config.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- Custom Alert System -->
+    <script src="assets/js/alert.js"></script>
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -449,8 +451,10 @@
         const qrContainer = document.querySelector('.bg-white.p-4.rounded-lg.shadow-sm'); // Container da imagem do QR
         
         if (!instanceId) {
-            alert('Instância não especificada');
-            window.location.href = 'instancia.html';
+            showError('Instância não especificada', 'Erro');
+            setTimeout(() => {
+                window.location.href = 'instancia.html';
+            }, 2000);
         } else {
             document.querySelector('[data-i18n="page-title"]').textContent = `Conectar ${instanceId}`;
             // Substituir a imagem estática pela div onde o qrcode.js vai renderizar
@@ -468,8 +472,10 @@
                 const statusData = await statusRes.json();
 
                 if (statusData.success && statusData.data.isConnected) {
-                    alert('Instância Conectada com Sucesso!');
-                    window.location.href = 'instancia.html';
+                    showSuccess('Instância conectada com sucesso! Redirecionando...', 'Conectado!');
+                    setTimeout(() => {
+                        window.location.href = 'instancia.html';
+                    }, 2000);
                     return;
                 }
 

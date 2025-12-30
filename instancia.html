@@ -47,6 +47,8 @@
         rel="stylesheet" />
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Custom Alert System -->
+    <script src="assets/js/alert.js"></script>
     <!-- Tailwind Configuration -->
     <script id="tailwind-config">
         tailwind.config = {
@@ -225,12 +227,12 @@
                                                 <span
                                                     class="material-symbols-outlined text-text-secondary-light dark:text-text-secondary-dark">label</span>
                                             </div>
-                                            <input
+                                            <input id="instance-name-input"
                                                 class="w-full bg-slate-50 dark:bg-[#111722] border border-border-light dark:border-border-dark text-slate-900 dark:text-white text-sm rounded-lg focus:ring-primary focus:border-primary block pl-10 p-3 placeholder-text-secondary-light dark:placeholder-text-secondary-dark transition-all"
                                                 placeholder="Ex: Marketing - Vendas" type="text" />
                                         </div>
                                     </div>
-                                    <button
+                                    <button id="create-instance-btn"
                                         class="w-full sm:w-auto flex items-center justify-center gap-2 bg-primary hover:bg-white hover:text-slate-900 text-slate-900 font-medium rounded-lg text-sm px-6 py-3 transition-all shadow-lg shadow-primary/20">
                                         <span class="material-symbols-outlined text-[20px]">add_circle</span>
                                         <span data-i18n="create-instance">Criar Instância</span>
@@ -264,8 +266,8 @@
                     <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
                         <h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
                             Instâncias Ativas
-                            <span
-                                class="bg-primary/10 text-primary text-xs font-bold px-2.5 py-0.5 rounded-full border border-primary/20">3</span>
+                            <span id="instance-count"
+                                class="bg-primary/10 text-primary text-xs font-bold px-2.5 py-0.5 rounded-full border border-primary/20">0</span>
                         </h3>
                         <div class="relative w-full sm:w-72">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -278,139 +280,8 @@
                         </div>
                     </div>
                     <!-- Instances Grid -->
-                    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 mt-2">
-                        <!-- Card 1: Connected -->
-                        <div
-                            class="group relative bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-5 hover:border-primary/50 transition-all shadow-sm hover:shadow-md">
-                            <div class="flex justify-between items-start mb-4">
-                                <div class="flex items-center gap-3">
-                                    <div
-                                        class="size-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400">
-                                        <span class="material-symbols-outlined">chat</span>
-                                    </div>
-                                    <div>
-                                        <h4 class="font-bold text-slate-900 dark:text-white text-lg">Suporte Técnico
-                                        </h4>
-                                        <p
-                                            class="text-xs text-text-secondary-light dark:text-text-secondary-dark font-mono">
-                                            ID: inst_8823</p>
-                                    </div>
-                                </div>
-                                <div class="relative">
-                                    <button
-                                        class="text-text-secondary-light dark:text-text-secondary-dark hover:text-slate-900 dark:hover:text-white p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                                        <span class="material-symbols-outlined">more_vert</span>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2 mb-6">
-                                <div class="h-2.5 w-2.5 rounded-full bg-green-500 animate-pulse"></div>
-                                <span class="text-sm font-medium text-green-600 dark:text-green-400">Conectado</span>
-                                <span
-                                    class="text-xs text-text-secondary-light dark:text-text-secondary-dark ml-auto">Bateria:
-                                    85%</span>
-                            </div>
-                            <div
-                                class="flex items-center justify-between pt-4 border-t border-border-light dark:border-border-dark gap-2">
-                                <div
-                                    class="text-xs text-text-secondary-light dark:text-text-secondary-dark flex items-center gap-1 truncate">
-                                    <span class="material-symbols-outlined text-[16px]">phone_iphone</span>
-                                    +55 11 9****-1234
-                                </div>
-                                <button
-                                    class="text-primary hover:text-dark-hover text-sm font-semibold flex items-center gap-1 transition-colors">
-                                    <span data-i18n="configure">Configurar</span>
-                                    <span class="material-symbols-outlined text-[16px]">settings</span>
-                                </button>
-                            </div>
-                        </div>
-                        <!-- Card 2: Disconnected -->
-                        <div
-                            class="group relative bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-5 hover:border-red-500/50 transition-all shadow-sm">
-                            <div class="flex justify-between items-start mb-4">
-                                <div class="flex items-center gap-3">
-                                    <div
-                                        class="size-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400">
-                                        <span class="material-symbols-outlined">link_off</span>
-                                    </div>
-                                    <div>
-                                        <h4 class="font-bold text-slate-900 dark:text-white text-lg">Bot de Vendas</h4>
-                                        <p
-                                            class="text-xs text-text-secondary-light dark:text-text-secondary-dark font-mono">
-                                            ID: inst_9941</p>
-                                    </div>
-                                </div>
-                                <div class="relative">
-                                    <button
-                                        class="text-text-secondary-light dark:text-text-secondary-dark hover:text-slate-900 dark:hover:text-white p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                                        <span class="material-symbols-outlined">more_vert</span>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2 mb-6">
-                                <div class="h-2.5 w-2.5 rounded-full bg-red-500"></div>
-                                <span class="text-sm font-medium text-red-600 dark:text-red-400">Desconectado</span>
-                                <span
-                                    class="text-xs text-text-secondary-light dark:text-text-secondary-dark ml-auto">Desde:
-                                    2h atrás</span>
-                            </div>
-                            <div
-                                class="flex items-center justify-between pt-4 border-t border-border-light dark:border-border-dark gap-2">
-                                <div
-                                    class="text-xs text-text-secondary-light dark:text-text-secondary-dark flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-[16px]">error</span>
-                                    Falha na autenticação
-                                </div>
-                                <button
-                                    class="bg-primary/10 hover:bg-primary/20 text-dark text-sm font-semibold px-3 py-1.5 rounded transition-colors flex items-center gap-1">
-                                    <span data-i18n="reconnect">Reconectar</span>
-                                    <span class="material-symbols-outlined text-[16px]">qr_code</span>
-                                </button>
-                            </div>
-                        </div>
-                        <!-- Card 3: Pending/Creating -->
-                        <div
-                            class="group relative bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-5 hover:border-yellow-500/50 transition-all shadow-sm">
-                            <div class="flex justify-between items-start mb-4">
-                                <div class="flex items-center gap-3">
-                                    <div
-                                        class="size-12 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center text-yellow-600 dark:text-yellow-400">
-                                        <span class="material-symbols-outlined">pending</span>
-                                    </div>
-                                    <div>
-                                        <h4 class="font-bold text-slate-900 dark:text-white text-lg">Marketing Promo
-                                        </h4>
-                                        <p
-                                            class="text-xs text-text-secondary-light dark:text-text-secondary-dark font-mono">
-                                            ID: inst_0021</p>
-                                    </div>
-                                </div>
-                                <div class="relative">
-                                    <button
-                                        class="text-text-secondary-light dark:text-text-secondary-dark hover:text-slate-900 dark:hover:text-white p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                                        <span class="material-symbols-outlined">more_vert</span>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2 mb-6">
-                                <div class="h-2.5 w-2.5 rounded-full bg-yellow-500 animate-pulse"></div>
-                                <span class="text-sm font-medium text-yellow-600 dark:text-yellow-400">Aguardando
-                                    Leitura</span>
-                            </div>
-                            <div
-                                class="flex items-center justify-between pt-4 border-t border-border-light dark:border-border-dark gap-2">
-                                <div
-                                    class="text-xs text-text-secondary-light dark:text-text-secondary-dark flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-[16px]">timer</span>
-                                    Expira em 45s
-                                </div>
-                                <button
-                                    class="text-primary hover:text-dark text-sm font-semibold flex items-center gap-1 transition-colors">
-                                    <span data-i18n="show-qr">Exibir QR Code</span>
-                                    <span class="material-symbols-outlined text-[16px]">visibility</span>
-                                </button>
-                            </div>
-                        </div>
+                    <div id="instances-grid" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 mt-2">
+                        <!-- Cards serão inseridos aqui dinamicamente -->
                     </div>
                 </div>
                 <!-- Footer Section (Optional for context) -->
@@ -611,15 +482,20 @@
                 
                 if (data.success) {
                     renderInstances(data.data);
+                    document.getElementById('instance-count').textContent = data.data.length;
                 }
             } catch (error) {
                 console.error('Error fetching instances:', error);
-                // Fallback to empty state or show error
-                document.getElementById('instances-grid').innerHTML = ''; 
+                document.getElementById('instances-grid').innerHTML = '<div class="col-span-full text-center py-12"><p class="text-text-secondary-light dark:text-text-secondary-dark">Erro ao carregar instâncias. Verifique se a API está rodando.</p></div>'; 
             }
         }
 
         async function createInstance(instanceName) {
+            if (!instanceName || instanceName.trim() === '') {
+                showWarning('Por favor, insira um nome para a instância');
+                return;
+            }
+
             try {
                 const response = await fetch(`${API_CONFIG.baseUrl}/instances`, {
                     method: 'POST',
@@ -627,82 +503,142 @@
                         'Content-Type': 'application/json',
                         'x-api-key': API_CONFIG.apiKey
                     },
-                    body: JSON.stringify({ instanceId: instanceName })
+                    body: JSON.stringify({ instanceId: instanceName.trim() })
                 });
                 
                 const data = await response.json();
                 
                 if (data.success) {
-                    // Redirect to QR code page with instance ID
-                    window.location.href = `qr.html?instance=${instanceName}`;
+                    showSuccess('Instância criada com sucesso! Redirecionando...', 'Sucesso!');
+                    setTimeout(() => {
+                        window.location.href = `qr.html?instance=${encodeURIComponent(instanceName.trim())}`;
+                    }, 1500);
                 } else {
-                    alert('Erro ao criar instância: ' + data.message);
+                    showError(data.message || 'Erro desconhecido ao criar instância');
                 }
             } catch (error) {
                 console.error('Error creating instance:', error);
-                alert('Erro ao conectar com o servidor');
+                showError('Erro ao conectar com o servidor. Verifique se a API está rodando.');
             }
+        }
+
+        async function deleteInstance(instanceId) {
+            showConfirm(
+                `Tem certeza que deseja deletar a instância "${instanceId}"? Esta ação não pode ser desfeita.`,
+                async () => {
+                    try {
+                        const response = await fetch(`${API_CONFIG.baseUrl}/instances/${instanceId}`, {
+                            method: 'DELETE',
+                            headers: { 'x-api-key': API_CONFIG.apiKey }
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            showSuccess('Instância deletada com sucesso!');
+                            setTimeout(() => fetchInstances(), 1000);
+                        } else {
+                            showError(data.message || 'Erro desconhecido ao deletar instância');
+                        }
+                    } catch (error) {
+                        console.error('Error deleting instance:', error);
+                        showError('Erro ao conectar com o servidor');
+                    }
+                },
+                null,
+                'Confirmar Exclusão'
+            );
         }
 
         function renderInstances(instances) {
             const grid = document.getElementById('instances-grid');
-            // Keep the "New Connection" card
-            const newConnectionCard = grid.firstElementChild.outerHTML;
-            grid.innerHTML = newConnectionCard + instances.map(instance => `
-                <div class="bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-xl p-6 hover:shadow-lg transition-all duration-300 group relative overflow-hidden">
-                    <div class="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
-                        <button onclick="deleteInstance('${instance.instanceId}')" class="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors" title="Deletar">
-                            <span class="material-symbols-outlined text-[20px]">delete</span>
-                        </button>
-                    </div>
-                    
-                    <div class="flex items-start justify-between mb-6">
-                        <div class="flex items-center gap-4">
-                            <div class="relative">
-                                <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xl">
-                                    ${instance.instanceId.substring(0, 2).toUpperCase()}
-                                </div>
-                                <div class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white dark:border-surface-dark ${instance.isConnected ? 'bg-emerald-500' : 'bg-red-500'}"></div>
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-lg text-slate-800 dark:text-white">${instance.instanceId}</h3>
-                                <p class="text-sm text-text-secondary-light dark:text-text-secondary-dark font-medium flex items-center gap-1.5">
-                                    <span class="w-1.5 h-1.5 rounded-full ${instance.isConnected ? 'bg-emerald-500' : 'bg-red-500'}"></span>
-                                    ${instance.isConnected ? translations[currentLanguage]['connected'] || 'Conectado' : translations[currentLanguage]['disconnected'] || 'Desconectado'}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="space-y-3">
-                        ${instance.isConnected ? `
-                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-700">
-                            <span class="text-xs font-medium text-text-secondary-light dark:text-text-secondary-dark uppercase tracking-wider">Status</span>
-                            <span class="text-sm font-bold text-emerald-500">Ativo</span>
-                        </div>
-                        ` : `
-                        <a href="qr.html?instance=${instance.instanceId}" class="w-full py-2.5 px-4 bg-primary hover:bg-primary-dark text-white rounded-lg font-medium transition-all duration-300 flex items-center justify-center gap-2 group-hover:shadow-lg group-hover:shadow-primary/20">
-                            <span data-i18n="reconnect">Reconectar</span>
-                            <span class="material-symbols-outlined text-[18px]">qr_code_2</span>
-                        </a>
-                        `}
-                    </div>
-                </div>
-            `).join('');
-
-            // Re-bind click event for create button
-            const createBtn = document.querySelector('button[onclick="alert(\'Funcionalidade de criar nova instância\')"]');
-            if (createBtn) {
-                createBtn.removeAttribute('onclick');
-                createBtn.addEventListener('click', () => {
-                    const name = prompt(translations[currentLanguage]['instance-placeholder'] || 'Nome da instância:');
-                    if (name) createInstance(name);
-                });
+            
+            if (!instances || instances.length === 0) {
+                grid.innerHTML = '<div class="col-span-full text-center py-12">' +
+                    '<div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 mb-4">' +
+                    '<span class="material-symbols-outlined text-4xl text-gray-400">inbox</span>' +
+                    '</div>' +
+                    '<p class="text-text-secondary-light dark:text-text-secondary-dark text-lg">Nenhuma instância criada ainda</p>' +
+                    '<p class="text-text-secondary-light dark:text-text-secondary-dark text-sm mt-2">Crie sua primeira instância acima</p>' +
+                    '</div>';
+                return;
             }
+
+            const cards = instances.map(instance => {
+                const isConnected = instance.isConnected;
+                const statusColor = isConnected ? 'green' : 'red';
+                const statusText = isConnected ? (translations[currentLanguage]['connected'] || 'Conectado') : (translations[currentLanguage]['disconnected'] || 'Desconectado');
+                const statusIcon = isConnected ? 'chat' : 'link_off';
+                
+                let actionButtons = '';
+                if (isConnected) {
+                    actionButtons = '<div class="text-xs text-text-secondary-light dark:text-text-secondary-dark flex items-center gap-1">' +
+                        '<span class="material-symbols-outlined text-[16px]">check_circle</span>' +
+                        'Ativo' +
+                        '</div>' +
+                        '<button class="text-primary hover:text-primary-hover text-sm font-semibold flex items-center gap-1 transition-colors">' +
+                        '<span data-i18n="configure">Configurar</span>' +
+                        '<span class="material-symbols-outlined text-[16px]">settings</span>' +
+                        '</button>';
+                } else {
+                    actionButtons = '<div class="text-xs text-text-secondary-light dark:text-text-secondary-dark flex items-center gap-1">' +
+                        '<span class="material-symbols-outlined text-[16px]">error</span>' +
+                        'Desconectado' +
+                        '</div>' +
+                        '<a href="qr.html?instance=' + encodeURIComponent(instance.instanceId) + '" class="bg-primary/10 hover:bg-primary/20 text-slate-900 dark:text-white text-sm font-semibold px-3 py-1.5 rounded transition-colors flex items-center gap-1">' +
+                        '<span data-i18n="reconnect">Reconectar</span>' +
+                        '<span class="material-symbols-outlined text-[16px]">qr_code</span>' +
+                        '</a>';
+                }
+                
+                return '<div class="group relative bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-5 hover:border-primary/50 transition-all shadow-sm hover:shadow-md">' +
+                    '<div class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">' +
+                    '<button onclick="deleteInstance(\'' + instance.instanceId + '\')" class="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors" title="Deletar">' +
+                    '<span class="material-symbols-outlined text-[20px]">delete</span>' +
+                    '</button>' +
+                    '</div>' +
+                    '<div class="flex justify-between items-start mb-4">' +
+                    '<div class="flex items-center gap-3">' +
+                    '<div class="size-12 rounded-full bg-' + statusColor + '-100 dark:bg-' + statusColor + '-900/30 flex items-center justify-center text-' + statusColor + '-600 dark:text-' + statusColor + '-400">' +
+                    '<span class="material-symbols-outlined">' + statusIcon + '</span>' +
+                    '</div>' +
+                    '<div>' +
+                    '<h4 class="font-bold text-slate-900 dark:text-white text-lg">' + instance.instanceId + '</h4>' +
+                    '<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark font-mono">ID: ' + instance.instanceId + '</p>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="flex items-center gap-2 mb-6">' +
+                    '<div class="h-2.5 w-2.5 rounded-full bg-' + statusColor + '-500' + (isConnected ? ' animate-pulse' : '') + '"></div>' +
+                    '<span class="text-sm font-medium text-' + statusColor + '-600 dark:text-' + statusColor + '-400">' + statusText + '</span>' +
+                    '</div>' +
+                    '<div class="flex items-center justify-between pt-4 border-t border-border-light dark:border-border-dark gap-2">' +
+                    actionButtons +
+                    '</div>' +
+                    '</div>';
+            });
+            
+            grid.innerHTML = cards.join('');
         }
+        
+        // Event listeners
+        document.getElementById('create-instance-btn').addEventListener('click', () => {
+            const instanceName = document.getElementById('instance-name-input').value;
+            createInstance(instanceName);
+        });
+
+        document.getElementById('instance-name-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const instanceName = document.getElementById('instance-name-input').value;
+                createInstance(instanceName);
+            }
+        });
         
         // Load instances on start
         fetchInstances();
+        
+        // Auto-refresh every 10 seconds
+        setInterval(fetchInstances, 10000);
 
     </script>
 </body>

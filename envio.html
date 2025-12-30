@@ -15,6 +15,8 @@
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
         rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Custom Alert System -->
+    <script src="assets/js/alert.js"></script>
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -259,7 +261,10 @@
         // Send Functions
         function getInstance() {
             const val = document.getElementById('instanceName').value;
-            if(!val) { alert('Digite o nome da instância!'); return null; }
+            if(!val) { 
+                showWarning('Digite o nome da instância!', 'Campo obrigatório');
+                return null;
+            }
             return val;
         }
 
@@ -274,10 +279,15 @@
                     body: JSON.stringify(body)
                 });
                 const data = await response.json();
-                alert(JSON.stringify(data, null, 2));
+                
+                if (data.success) {
+                    showSuccess('Mensagem enviada com sucesso!', 'Sucesso');
+                } else {
+                    showError(data.message || 'Erro ao enviar mensagem', 'Erro');
+                }
             } catch (err) {
                 console.error(err);
-                alert('Erro na requisição');
+                showError('Erro na requisição. Verifique se a API está rodando.', 'Erro de Conexão');
             }
         }
 

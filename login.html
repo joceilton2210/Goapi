@@ -45,6 +45,8 @@
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
         rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Custom Alert System -->
+    <script src="assets/js/alert.js"></script>
     <script>
         tailwind.config = {
             darkMode: "class",
@@ -247,12 +249,18 @@
                 localStorage.setItem('user_token', 'demo-token');
                 
                 if (!isLogin) {
-                    alert('Cadastro realizado com sucesso! Bem-vindo.');
+                    showSuccess('Cadastro realizado com sucesso! Redirecionando...', 'Bem-vindo!');
+                    setTimeout(() => {
+                        window.location.href = 'instancia.html';
+                    }, 1500);
+                } else {
+                    showSuccess('Login realizado com sucesso! Redirecionando...', 'Bem-vindo de volta!');
+                    setTimeout(() => {
+                        window.location.href = 'instancia.html';
+                    }, 1000);
                 }
-                
-                window.location.href = 'instancia.html';
             } else {
-                alert('Preencha usuário e senha');
+                showWarning('Por favor, preencha usuário e senha', 'Campos obrigatórios');
             }
         });
 

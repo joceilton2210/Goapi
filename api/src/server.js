@@ -4,36 +4,39 @@ import config from './config/default.js';
 import logger from './utils/logger.js';
 import { errorHandler } from './middleware/error.middleware.js';
 import { authMiddleware } from './middleware/auth.middleware.js';
-import { initDb } from './config/database.js'; // Import DB Init
-
-// Rotas
-import instanceRoutes from './routes/instance.routes.js';
-import messageRoutes from './routes/message.routes.js';
-import webhookRoutes from './routes/webhook.routes.js';
-
-// Middleware de erro
+import { initDb } from './config/database.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-
+// Rotas
+import instanceRoutes from './routes/instance.routes.js';
+import messageRoutes from './routes/message.routes.js';
+import webhookRoutes from './routes/webhook.routes.js';
 
 const app = express();
 
 // Middlewares
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '../public'))); // Servir arquivos da pasta 'public' (que será criada no Docker)
 
-// Rotas da API
-// ...
+// Servir arquivos estáticos (HTML, CSS, JS, imagens) da pasta raiz do projeto
+app.use(express.static(path.join(__dirname, '../../')));
 
-// Rotas protegidas
+// Health Check
+app.get('/health', (req, res) => res.status(200).json({ status: 'ok' }));
+
+// Rotas protegidas da API
 app.use('/api/instances', authMiddleware, instanceRoutes);
 app.use('/api/messages', authMiddleware, messageRoutes);
 app.use('/api/webhooks', authMiddleware, webhookRoutes);
+
+// Rota padrão para servir o login.html
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../../login.html'));
+});
 
 // Error handler
 app.use(errorHandler);
@@ -48,6 +51,7 @@ app.listen(config.port, async () => {
     }
     logger.info(`Server running on port ${config.port}`);
     logger.info(`Environment: ${process.env.NODE_ENV}`);
+    logger.info(`Access the web interface at: http://${config.host}:${config.port}/login.html`);
 });
 
 // Tratamento de exceções não capturadas
