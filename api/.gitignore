@@ -1,6 +1,10 @@
 node_modules/
 sessions/
 uploads/
-*.log
+logs/
+test_auth/
 *.log
 .DS_Store
+.env
+.env.local
+.env.*.local

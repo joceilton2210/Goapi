@@ -13,6 +13,7 @@ services:
       - NODE_ENV=production
       - API_KEY=change-this-key
       - DB_HOST=postgres
+      - DB_PORT=5432
       - DB_USER=whatsapp
       - DB_PASS=whatsapp_password
       - DB_NAME=whatsapp
@@ -21,6 +22,7 @@ services:
       - postgres
       - redis
     volumes:
+      - sessions:/app/sessions
       - uploads:/app/uploads
       - logs:/app/logs
 
@@ -41,7 +43,10 @@ services:
       - redisdata:/data
 
 volumes:
+  sessions:
   uploads:
   logs:
   pgdata:
   redisdata:
+
+

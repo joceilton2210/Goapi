@@ -1,0 +1,14 @@
+node_modules
+npm-debug.log
+.env
+.git
+.gitignore
+README.md
+.DS_Store
+*.md
+sessions/*
+uploads/*
+logs/*
+test-connection.js
+baileys_auth_info
+.vscode

@@ -58,22 +58,39 @@ class BaileysService {
 
             const sock = makeWASocket({
                 version,
-                logger: logger.child({ class: 'baileys' }),
+                logger: logger.child({ class: 'baileys', level: 'error' }),
+                printQRInTerminal: false,
                 auth: {
                     creds: state.creds,
                     keys: makeCacheableSignalKeyStore(state.keys, logger)
                 },
                 msgRetryCounterCache,
                 generateHighQualityLinkPreview: true,
-                printQRInTerminal: false,
+                getMessage: async (key) => {
+                    return { conversation: 'Hello' };
+                },
+                browser: ['GO API', 'Chrome', '10.0'],
+                markOnlineOnConnect: true,
+                syncFullHistory: false,
                 connectTimeoutMs: 60000,
                 defaultQueryTimeoutMs: 60000,
-                keepAliveIntervalMs: 30000
+                keepAliveIntervalMs: 30000,
+                emitOwnEvents: false,
+                fireInitQueries: true,
+                shouldIgnoreJid: (jid) => false,
+                linkPreviewImageThumbnailWidth: 192,
+                transactionOpts: { maxCommitRetries: 10, delayBetweenTriesMs: 3000 },
+                maxMsgRetryCount: 5,
+                appStateMacVerification: {
+                    patch: false,
+                    snapshot: false
+                },
+                retryRequestDelayMs: 250
             });
 
             // Event handlers
             sock.ev.on('connection.update', async (update) => {
-                const { connection, lastDisconnect, qr } = update;
+                const { connection, lastDisconnect, qr, isNewLogin } = update;
 
                 logger.info(`[${instanceId}] Connection update: ${connection || 'no-change'}`);
 
@@ -101,6 +118,7 @@ class BaileysService {
                     instanceState.isConnected = false;
                     instanceState.connectionStatus = 'disconnected';
                     
+                    socketService.emitDisconnected(instanceId, lastDisconnect?.error?.message);
                     webhookService.trigger(instanceId, 'instance.disconnected', { 
                         reason: lastDisconnect?.error?.message,
                         statusCode 
@@ -114,8 +132,10 @@ class BaileysService {
                         setTimeout(async () => {
                             try {
                                 logger.info(`[${instanceId}] Attempting reconnection...`);
-                                // Não chamar createInstance novamente, apenas reconectar o socket
-                                await sock.ws.close();
+                                // Fechar socket atual e deixar o Baileys reconectar automaticamente
+                                if (sock.ws && sock.ws.readyState === 1) {
+                                    sock.ws.close();
+                                }
                             } catch (error) {
                                 logger.error(`[${instanceId}] Reconnection error:`, error);
                             }
@@ -124,6 +144,7 @@ class BaileysService {
                         // Logout explícito - APENAS AQUI deletamos
                         logger.warn(`[${instanceId}] Explicit logout detected - removing from memory`);
                         this.instances.delete(instanceId);
+                        socketService.emitConnectionStatus(instanceId, 'logged_out');
                     }
                 }
 
@@ -148,6 +169,7 @@ class BaileysService {
                     logger.info(`[${instanceId}] ✓✓✓ CONNECTED SUCCESSFULLY ✓✓✓`);
                     logger.info(`[${instanceId}] Phone: ${phoneNumber}`);
                     logger.info(`[${instanceId}] Name: ${userName}`);
+                    logger.info(`[${instanceId}] Is New Login: ${isNewLogin}`);
                     
                     // Emitir via WebSocket IMEDIATAMENTE
                     socketService.emitConnected(instanceId, phoneNumber, userName);
@@ -156,6 +178,7 @@ class BaileysService {
                     webhookService.trigger(instanceId, 'instance.connected', { 
                         phone: phoneNumber,
                         name: userName,
+                        isNewLogin,
                         timestamp: new Date().toISOString()
                     });
                 }
