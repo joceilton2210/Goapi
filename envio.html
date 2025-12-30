@@ -104,9 +104,11 @@
                     
                     <!-- Instance Setup -->
                     <div class="mb-8">
-                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Nome da Instância</label>
-                         <input type="text" id="instanceName" class="w-full rounded-lg bg-white dark:bg-surface-dark border border-gray-300 dark:border-border-dark px-4 py-2 dark:text-white focus:border-primary focus:ring-primary" placeholder="Ex: minha_empresa_01" value="">
-                         <p class="text-xs text-gray-500 mt-1">A instância deve estar conectada.</p>
+                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Selecione a Instância</label>
+                         <select id="instanceName" class="w-full rounded-lg bg-white dark:bg-surface-dark border border-gray-300 dark:border-border-dark px-4 py-2 dark:text-white focus:border-primary focus:ring-primary">
+                             <option value="">Carregando instâncias...</option>
+                         </select>
+                         <p class="text-xs text-gray-500 mt-1">Apenas instâncias conectadas aparecem aqui.</p>
                     </div>
 
                     <!-- Text Form -->
@@ -263,11 +265,41 @@
             activeBtn.classList.add('bg-primary/10', 'border-l-2', 'border-primary', 'text-slate-900', 'dark:text-white');
         }
 
+        // Carregar instâncias disponíveis
+        async function loadInstances() {
+            try {
+                const response = await fetch(`${API_CONFIG.baseUrl}/instances`, {
+                    headers: { 'x-api-key': API_CONFIG.apiKey }
+                });
+                const data = await response.json();
+                
+                const select = document.getElementById('instanceName');
+                
+                if (data.success && data.data.length > 0) {
+                    const connectedInstances = data.data.filter(inst => inst.isConnected);
+                    
+                    if (connectedInstances.length > 0) {
+                        select.innerHTML = '<option value="">Selecione uma instância</option>' +
+                            connectedInstances.map(inst => 
+                                `<option value="${inst.instanceId}">${inst.instanceId}</option>`
+                            ).join('');
+                    } else {
+                        select.innerHTML = '<option value="">Nenhuma instância conectada</option>';
+                    }
+                } else {
+                    select.innerHTML = '<option value="">Nenhuma instância disponível</option>';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar instâncias:', error);
+                document.getElementById('instanceName').innerHTML = '<option value="">Erro ao carregar</option>';
+            }
+        }
+
         // Send Functions
         function getInstance() {
             const val = document.getElementById('instanceName').value;
             if(!val) { 
-                showWarning('Digite o nome da instância!', 'Campo obrigatório');
+                showWarning('Selecione uma instância!', 'Campo obrigatório');
                 return null;
             }
             return val;
@@ -330,6 +362,9 @@
                 pixName: document.getElementById('pix-name').value
             });
         }
+
+        // Carregar instâncias ao iniciar a página
+        loadInstances();
     </script>
 </body>
 </html>
