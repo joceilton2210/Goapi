@@ -1,7 +1,12 @@
 // Sistema de Alertas Personalizados - GO API
 class CustomAlert {
     constructor() {
-        this.createAlertContainer();
+        // Aguardar o DOM estar pronto
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.createAlertContainer());
+        } else {
+            this.createAlertContainer();
+        }
     }
 
     createAlertContainer() {
@@ -36,12 +41,21 @@ class CustomAlert {
                 </div>
             </div>
         `;
-        document.body.appendChild(container);
+        
+        if (document.body) {
+            document.body.appendChild(container);
+            this.attachEventListeners();
+        }
+    }
 
-        // Event listeners
-        document.getElementById('alert-overlay').addEventListener('click', () => this.close());
-        document.getElementById('alert-confirm').addEventListener('click', () => this.handleConfirm());
-        document.getElementById('alert-cancel').addEventListener('click', () => this.handleCancel());
+    attachEventListeners() {
+        const overlay = document.getElementById('alert-overlay');
+        const confirmBtn = document.getElementById('alert-confirm');
+        const cancelBtn = document.getElementById('alert-cancel');
+        
+        if (overlay) overlay.addEventListener('click', () => this.close());
+        if (confirmBtn) confirmBtn.addEventListener('click', () => this.handleConfirm());
+        if (cancelBtn) cancelBtn.addEventListener('click', () => this.handleCancel());
     }
 
     show(options) {
@@ -60,9 +74,14 @@ class CustomAlert {
         this.onCancel = onCancel;
 
         const container = document.getElementById('custom-alert-container');
+        if (!container) {
+            console.error('Alert container not found');
+            return;
+        }
+
         const box = document.getElementById('alert-box');
         const icon = document.getElementById('alert-icon');
-        const iconSpan = icon.querySelector('.material-symbols-outlined');
+        const iconSpan = icon?.querySelector('.material-symbols-outlined');
         const titleEl = document.getElementById('alert-title');
         const messageEl = document.getElementById('alert-message');
         const confirmBtn = document.getElementById('alert-confirm');
@@ -105,26 +124,33 @@ class CustomAlert {
         const config = types[type] || types.info;
 
         // Aplicar estilos
-        icon.className = `flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center ${config.iconBg}`;
-        iconSpan.className = `material-symbols-outlined text-2xl ${config.iconColor}`;
-        iconSpan.textContent = config.icon;
-        titleEl.textContent = title;
-        messageEl.textContent = message;
-        confirmBtn.textContent = confirmText;
-        confirmBtn.className = `px-6 py-2 text-sm font-bold text-white rounded-lg transition-all shadow-lg ${config.btnBg}`;
-        cancelBtn.textContent = cancelText;
-
-        if (showCancel) {
-            cancelBtn.classList.remove('hidden');
-        } else {
-            cancelBtn.classList.add('hidden');
+        if (icon) icon.className = `flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center ${config.iconBg}`;
+        if (iconSpan) {
+            iconSpan.className = `material-symbols-outlined text-2xl ${config.iconColor}`;
+            iconSpan.textContent = config.icon;
+        }
+        if (titleEl) titleEl.textContent = title;
+        if (messageEl) messageEl.textContent = message;
+        if (confirmBtn) {
+            confirmBtn.textContent = confirmText;
+            confirmBtn.className = `px-6 py-2 text-sm font-bold text-white rounded-lg transition-all shadow-lg ${config.btnBg}`;
+        }
+        if (cancelBtn) {
+            cancelBtn.textContent = cancelText;
+            if (showCancel) {
+                cancelBtn.classList.remove('hidden');
+            } else {
+                cancelBtn.classList.add('hidden');
+            }
         }
 
         // Mostrar
         container.classList.remove('hidden');
         setTimeout(() => {
-            box.classList.remove('scale-95', 'opacity-0');
-            box.classList.add('scale-100', 'opacity-100');
+            if (box) {
+                box.classList.remove('scale-95', 'opacity-0');
+                box.classList.add('scale-100', 'opacity-100');
+            }
         }, 10);
     }
 
@@ -132,11 +158,13 @@ class CustomAlert {
         const container = document.getElementById('custom-alert-container');
         const box = document.getElementById('alert-box');
         
-        box.classList.remove('scale-100', 'opacity-100');
-        box.classList.add('scale-95', 'opacity-0');
+        if (box) {
+            box.classList.remove('scale-100', 'opacity-100');
+            box.classList.add('scale-95', 'opacity-0');
+        }
         
         setTimeout(() => {
-            container.classList.add('hidden');
+            if (container) container.classList.add('hidden');
         }, 200);
     }
 
@@ -156,10 +184,25 @@ class CustomAlert {
 }
 
 // Instância global
-const customAlert = new CustomAlert();
+let customAlert;
+
+// Inicializar quando o DOM estiver pronto
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        customAlert = new CustomAlert();
+    });
+} else {
+    customAlert = new CustomAlert();
+}
 
 // Funções auxiliares
 window.showAlert = (message, type = 'info', title = '') => {
+    if (!customAlert) {
+        console.warn('CustomAlert not initialized yet, using console');
+        console.log(`[${type.toUpperCase()}] ${title}: ${message}`);
+        return;
+    }
+    
     const titles = {
         success: 'Sucesso!',
         error: 'Erro!',
@@ -192,6 +235,13 @@ window.showInfo = (message, title = 'Informação') => {
 };
 
 window.showConfirm = (message, onConfirm, onCancel = null, title = 'Confirmação') => {
+    if (!customAlert) {
+        const result = confirm(message);
+        if (result && onConfirm) onConfirm();
+        else if (!result && onCancel) onCancel();
+        return;
+    }
+    
     customAlert.show({
         type: 'confirm',
         title,
