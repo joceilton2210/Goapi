@@ -25,8 +25,14 @@ class BaileysService {
 
     async createInstance(instanceId) {
         try {
+            // Se já existe, não criar novamente
             if (this.instances.has(instanceId)) {
-                throw new Error('Instance already exists');
+                logger.info(`Instance ${instanceId} already exists, skipping creation`);
+                return {
+                    instanceId,
+                    status: 'already_exists',
+                    qrCode: this.getQRCode(instanceId)
+                };
             }
 
             // DB Auth
@@ -66,9 +72,15 @@ class BaileysService {
                     webhookService.trigger(instanceId, 'instance.disconnected', { reason: lastDisconnect?.error });
                     
                     if (shouldReconnect) {
-                        setTimeout(() => this.createInstance(instanceId), 3000);
+                        // Não deletar a instância, apenas tentar reconectar
+                        setTimeout(() => {
+                            logger.info(`Attempting to reconnect instance ${instanceId}`);
+                            this.createInstance(instanceId);
+                        }, 5000);
                     } else {
+                        // Só deletar se foi logout explícito
                         this.instances.delete(instanceId);
+                        logger.info(`Instance ${instanceId} logged out, removed from memory`);
                     }
                     
                     isConnected = false;

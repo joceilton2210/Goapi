@@ -595,7 +595,13 @@
                     if (qrElement) {
                         qrElement.innerHTML = '';
                         
-                        new QRCode(qrElement, {
+                        // Criar QR Code
+                        const qrCodeDiv = document.createElement('div');
+                        qrCodeDiv.style.position = 'relative';
+                        qrCodeDiv.style.display = 'inline-block';
+                        qrElement.appendChild(qrCodeDiv);
+                        
+                        new QRCode(qrCodeDiv, {
                             text: qrData.data.qrCode,
                             width: 250,
                             height: 250,
@@ -603,6 +609,34 @@
                             colorLight: "#ffffff",
                             correctLevel: QRCode.CorrectLevel.H
                         });
+                        
+                        // Adicionar logo no centro após um pequeno delay
+                        setTimeout(() => {
+                            const logoOverlay = document.createElement('div');
+                            logoOverlay.style.position = 'absolute';
+                            logoOverlay.style.top = '50%';
+                            logoOverlay.style.left = '50%';
+                            logoOverlay.style.transform = 'translate(-50%, -50%)';
+                            logoOverlay.style.width = '50px';
+                            logoOverlay.style.height = '50px';
+                            logoOverlay.style.backgroundColor = 'white';
+                            logoOverlay.style.borderRadius = '8px';
+                            logoOverlay.style.padding = '5px';
+                            logoOverlay.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+                            logoOverlay.style.display = 'flex';
+                            logoOverlay.style.alignItems = 'center';
+                            logoOverlay.style.justifyContent = 'center';
+                            
+                            const logo = document.createElement('img');
+                            logo.src = 'icone.png';
+                            logo.style.width = '40px';
+                            logo.style.height = '40px';
+                            logo.style.objectFit = 'contain';
+                            logo.alt = 'GO API';
+                            
+                            logoOverlay.appendChild(logo);
+                            qrCodeDiv.appendChild(logoOverlay);
+                        }, 100);
                         
                         updateQRStatus('waiting', 'Aguardando leitura...');
                     }
