@@ -136,13 +136,17 @@
                     <div class="h-8 w-[1px] bg-border-light dark:bg-border-dark"></div>
                     <div class="flex items-center gap-3">
                         <div class="text-right hidden sm:block">
-                            <p class="text-sm font-semibold">Admin User</p>
-                            <p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Pro Plan</p>
+                            <p id="user-name" class="text-sm font-semibold">Usuário</p>
+                            <p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">GO API</p>
                         </div>
                         <div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-primary"
                             data-alt="User profile picture placeholder"
                             style='background-image: url("icone.png");'>
                         </div>
+                        <button id="logout-btn" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
+                            <span class="material-symbols-outlined text-[18px]">logout</span>
+                            <span class="hidden sm:inline">Sair</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -430,6 +434,19 @@
         if (!localStorage.getItem('user_token')) {
             window.location.href = 'login.html';
         }
+
+        // Exibir nome do usuário
+        const userName = localStorage.getItem('user_name') || 'Usuário';
+        document.getElementById('user-name').textContent = userName;
+
+        // Botão de logout
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            if (confirm('Tem certeza que deseja sair?')) {
+                localStorage.removeItem('user_token');
+                localStorage.removeItem('user_name');
+                window.location.href = 'login.html';
+            }
+        });
         
         // Usar configuração global
         const API_CONFIG = window.GO_API_CONFIG || {
@@ -551,9 +568,13 @@
 
                 console.log('Status:', statusData);
                 console.log('QR Data:', qrData);
+                console.log('isConnected:', statusData.data?.isConnected);
+                console.log('hasQR:', statusData.data?.hasQR);
+                console.log('exists:', statusData.data?.exists);
 
                 // Verificar se já está conectado
-                if (statusData.success && statusData.data.isConnected) {
+                if (statusData.success && statusData.data.isConnected === true) {
+                    console.log('✓ CONECTADO! Redirecionando...');
                     // QR Code foi lido!
                     updateQRStatus('connected', '✓ WhatsApp Conectado!');
                     
@@ -660,8 +681,8 @@
         // Primeira chamada imediata
         updateQR();
         
-        // Verificar conexão a cada 2 segundos (mais rápido para detectar leitura)
-        checkConnectionInterval = setInterval(updateQR, 2000);
+        // Verificar conexão a cada 1 segundo (mais rápido para detectar leitura)
+        checkConnectionInterval = setInterval(updateQR, 1000);
     </script>
 </body>
 

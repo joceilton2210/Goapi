@@ -25,14 +25,35 @@ class BaileysService {
 
     async createInstance(instanceId) {
         try {
-            // Se já existe, não criar novamente
+            // Se já existe e está conectada, retornar
             if (this.instances.has(instanceId)) {
-                logger.info(`Instance ${instanceId} already exists, skipping creation`);
-                return {
-                    instanceId,
-                    status: 'already_exists',
-                    qrCode: this.getQRCode(instanceId)
-                };
+                const existingInstance = this.instances.get(instanceId);
+                const isConnected = existingInstance.isConnected();
+                
+                logger.info(`Instance ${instanceId} already exists, connected: ${isConnected}`);
+                
+                // Se já está conectada, retornar
+                if (isConnected) {
+                    return {
+                        instanceId,
+                        status: 'already_connected',
+                        qrCode: null
+                    };
+                }
+                
+                // Se não está conectada mas tem QR, retornar o QR
+                const qrCode = existingInstance.qrCode();
+                if (qrCode) {
+                    return {
+                        instanceId,
+                        status: 'already_exists',
+                        qrCode
+                    };
+                }
+                
+                // Se não tem QR e não está conectada, deletar e recriar
+                logger.info(`Instance ${instanceId} exists but not connected and no QR, recreating...`);
+                this.instances.delete(instanceId);
             }
 
             // DB Auth
