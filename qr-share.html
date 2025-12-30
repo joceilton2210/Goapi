@@ -198,12 +198,28 @@
             try {
                 updateStatus('waiting', 'Carregando QR Code...');
 
-                const qrRes = await fetch(`${API_CONFIG.baseUrl}/instances/${instanceId}/qr`, {
-                    headers: { 'x-api-key': API_CONFIG.apiKey }
-                });
-                const qrData = await qrRes.json();
+                // Buscar QR e Status em paralelo
+                const [qrRes, statusRes] = await Promise.all([
+                    fetch(`${API_CONFIG.baseUrl}/instances/${instanceId}/qr`, {
+                        headers: { 'x-api-key': API_CONFIG.apiKey }
+                    }),
+                    fetch(`${API_CONFIG.baseUrl}/instances/${instanceId}/status`, {
+                        headers: { 'x-api-key': API_CONFIG.apiKey }
+                    })
+                ]);
 
-                if (qrData.success && qrData.data.qrCode) {
+                const [qrData, statusData] = await Promise.all([
+                    qrRes.json(),
+                    statusRes.json()
+                ]);
+
+                // Verificar se já está conectado
+                if (statusData.success && statusData.data.isConnected) {
+                    handleConnection();
+                    return;
+                }
+
+                if (qrData.success && qrData.data && qrData.data.qrCode) {
                     const qrElement = document.getElementById('qrcode');
                     qrElement.innerHTML = '';
                     
@@ -253,7 +269,7 @@
                     updateStatus('waiting', 'Aguardando leitura...');
                 } else {
                     // Se não conseguiu gerar QR, tentar novamente em 3 segundos
-                    updateStatus('waiting', 'Inicializando instância...');
+                    updateStatus('waiting', 'Gerando QR Code...');
                     setTimeout(loadQRCode, 3000);
                 }
             } catch (error) {

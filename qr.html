@@ -533,12 +533,22 @@
 
         async function updateQR() {
             try {
-                // Verificar status primeiro
-                const statusRes = await fetch(`${API_CONFIG.baseUrl}/instances/${instanceId}/status`, {
-                    headers: { 'x-api-key': API_CONFIG.apiKey }
-                });
-                const statusData = await statusRes.json();
+                // Buscar QR Code e Status em paralelo para ser mais rápido
+                const [qrRes, statusRes] = await Promise.all([
+                    fetch(`${API_CONFIG.baseUrl}/instances/${instanceId}/qr`, {
+                        headers: { 'x-api-key': API_CONFIG.apiKey }
+                    }),
+                    fetch(`${API_CONFIG.baseUrl}/instances/${instanceId}/status`, {
+                        headers: { 'x-api-key': API_CONFIG.apiKey }
+                    })
+                ]);
 
+                const [qrData, statusData] = await Promise.all([
+                    qrRes.json(),
+                    statusRes.json()
+                ]);
+
+                // Verificar se já está conectado
                 if (statusData.success && statusData.data.isConnected) {
                     // QR Code foi lido!
                     updateQRStatus('connected', '✓ QR Code lido com sucesso!');
@@ -549,14 +559,14 @@
                     }
                     
                     // Mostrar alerta de sucesso
-                    showSuccess('WhatsApp conectado com sucesso! Esta página será fechada em 10 segundos...', 'Conectado!');
+                    showSuccess('WhatsApp conectado com sucesso! Redirecionando em 5 segundos...', 'Conectado!');
                     
                     // Countdown visual
-                    let countdown = 10;
+                    let countdown = 5;
                     const countdownInterval = setInterval(() => {
                         countdown--;
                         if (countdown > 0) {
-                            updateQRStatus('connected', `✓ Conectado! Fechando em ${countdown}s...`);
+                            updateQRStatus('connected', `✓ Conectado! Redirecionando em ${countdown}s...`);
                         } else {
                             clearInterval(countdownInterval);
                             window.location.href = 'instancia.html';
@@ -566,13 +576,8 @@
                     return;
                 }
 
-                // Buscar QR Code
-                const qrRes = await fetch(`${API_CONFIG.baseUrl}/instances/${instanceId}/qr`, {
-                    headers: { 'x-api-key': API_CONFIG.apiKey }
-                });
-                const qrData = await qrRes.json();
-
-                if (qrData.success && qrData.data.qrCode) {
+                // Mostrar QR Code se disponível
+                if (qrData.success && qrData.data && qrData.data.qrCode) {
                     const qrElement = document.getElementById('qrcode');
                     if (qrElement) {
                         qrElement.innerHTML = '';
@@ -620,15 +625,19 @@
                             qrCodeDiv.appendChild(logoOverlay);
                         }, 100);
                         
-                        updateQRStatus('waiting', 'Aguardando leitura...');
+                        updateQRStatus('waiting', 'Aguardando leitura do QR Code...');
                     }
                 } else {
-                    // Se não tem QR, pode estar inicializando
-                    updateQRStatus('waiting', 'Inicializando instância...');
+                    // Se não tem QR, pode estar inicializando ou já conectado
+                    if (statusData.data && statusData.data.exists === false) {
+                        updateQRStatus('waiting', 'Criando instância... Aguarde...');
+                    } else {
+                        updateQRStatus('waiting', 'Gerando QR Code...');
+                    }
                 }
             } catch (error) {
                 console.error('Erro ao buscar QR/Status:', error);
-                updateQRStatus('error', 'Erro de conexão com API');
+                updateQRStatus('error', 'Erro de conexão com API. Tentando novamente...');
             }
         }
 
@@ -646,9 +655,11 @@
             });
         }
 
-        // Verificar conexão a cada 3 segundos (mais rápido para detectar leitura)
-        checkConnectionInterval = setInterval(updateQR, 3000);
-        updateQR(); // Primeira chamada imediata
+        // Primeira chamada imediata
+        updateQR();
+        
+        // Verificar conexão a cada 2 segundos (mais rápido para detectar leitura)
+        checkConnectionInterval = setInterval(updateQR, 2000);
     </script>
 </body>
 
