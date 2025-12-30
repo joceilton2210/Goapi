@@ -1,0 +1,25 @@
+# Dependências e Logs
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Ambiente e Segredos
+.env
+.env.local
+.env.*.local
+
+# Pastas de Dados
+sessions/
+uploads/
+logs/
+
+# Sistema Operacional
+.DS_Store
+Thumbs.db
+
+# Projetos Externos/Antigos
+baileys-pro/
+
+# IDEs
+.vscode/
+.idea/

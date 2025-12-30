@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html class="dark" lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Enviar Mensagem - GO API WhatsApp</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="logo.png">
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#eaa800",
+                        "primary-hover": "#1d66f0",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111722",
+                        "surface-dark": "#192233",
+                        "surface-light": "#ffffff",
+                        "border-dark": "#232f48",
+                        "border-light": "#e2e8f0",
+                        "text-secondary-dark": "#92a4c9",
+                        "text-secondary-light": "#64748b",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "mono": ["Fira Code", "monospace"]
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+
+<body
+    class="bg-gray-50 dark:bg-background-dark min-h-screen flex flex-col font-display text-slate-900 dark:text-white transition-colors duration-200">
+    
+    <!-- Header -->
+    <header class="border-b border-solid border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark sticky top-0 z-50">
+        <div class="flex items-center justify-center py-3 px-4 md:px-10 lg:px-20">
+            <div class="flex items-center justify-between w-full max-w-[1200px]">
+                <div class="flex items-center gap-6 text-slate-900 dark:text-white">
+                    <img src="logo_black.png" alt="GO API Logo" class="h-12 w-auto object-contain dark:hidden">
+                    <img src="logo_white.png" alt="GO API Logo" class="h-12 w-auto object-contain hidden dark:block">
+                    <a href="instancia.html" class="hidden md:block text-text-secondary-light dark:text-text-secondary-dark hover:text-white transition-colors text-sm font-medium">Dashboard</a>
+                    <a href="documentacao.html" class="hidden md:block text-text-secondary-light dark:text-text-secondary-dark hover:text-white transition-colors text-sm font-medium">Documentação</a>
+                    <a href="integracao.html" class="hidden md:block text-text-secondary-light dark:text-text-secondary-dark hover:text-white transition-colors text-sm font-medium">Integração</a>
+                    <a href="envio.html" class="hidden md:block text-primary font-semibold text-sm">Enviar Mensagens</a>
+                </div>
+                <div class="flex gap-6 items-center">
+                    <button id="theme-toggle" class="text-text-secondary-light dark:text-text-secondary-dark hover:text-white transition-colors">
+                        <span class="material-symbols-outlined dark:hidden">light_mode</span>
+                        <span class="material-symbols-outlined hidden dark:inline">dark_mode</span>
+                    </button>
+                    <!-- Language (Simplified) -->
+                    <div class="text-xs font-bold bg-primary/20 text-primary px-2 py-1 rounded">PT</div>
+                    <div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-primary" style='background-image: url("icone.png");'></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <div class="layout-container flex h-full grow flex-col">
+        <div class="flex flex-1 py-8 px-4 md:px-10 lg:px-20">
+            <div class="flex w-full max-w-[1200px] mx-auto gap-8">
+                
+                <!-- Sidebar -->
+                <aside class="hidden lg:block w-64 flex-shrink-0">
+                    <div class="sticky top-24">
+                        <nav class="flex flex-col gap-2">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-text-secondary-light dark:text-text-secondary-dark mb-2">Mensagens</h3>
+                            <button onclick="showTab('text')" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-slate-900 dark:text-white bg-primary/10 border-l-2 border-primary transition-colors text-left" id="btn-text">Texto</button>
+                            <button onclick="showTab('image')" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-white hover:bg-surface-dark transition-colors text-left" id="btn-image">Imagem</button>
+                            <button onclick="showTab('video')" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-white hover:bg-surface-dark transition-colors text-left" id="btn-video">Vídeo</button>
+                            <button onclick="showTab('audio')" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-white hover:bg-surface-dark transition-colors text-left" id="btn-audio">Áudio</button>
+                            <button onclick="showTab('pix')" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-white hover:bg-surface-dark transition-colors text-left" id="btn-pix">PIX</button>
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- Content -->
+                <main class="flex-1 min-w-0">
+                    <h1 class="text-3xl font-bold mb-2 dark:text-white">Envio Manual</h1>
+                    <p class="text-text-secondary-light dark:text-text-secondary-dark mb-8">Dispare mensagens de teste diretamente pelo painel.</p>
+                    
+                    <!-- Instance Setup -->
+                    <div class="mb-8">
+                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Nome da Instância</label>
+                         <input type="text" id="instanceName" class="w-full rounded-lg bg-white dark:bg-surface-dark border border-gray-300 dark:border-border-dark px-4 py-2 dark:text-white focus:border-primary focus:ring-primary" placeholder="Ex: minha_empresa_01" value="">
+                         <p class="text-xs text-gray-500 mt-1">A instância deve estar conectada.</p>
+                    </div>
+
+                    <!-- Text Form -->
+                    <div id="tab-text" class="tab-content">
+                        <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-6">
+                            <h2 class="text-xl font-bold mb-4 dark:text-white">Enviar Texto</h2>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Número (com DDI e DDD)</label>
+                                    <input type="text" id="text-number" class="w-full rounded-lg bg-background-light dark:bg-[#111722] border border-gray-300 dark:border-border-dark px-4 py-2 dark:text-white" placeholder="5511999999999">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Mensagem</label>
+                                    <textarea id="text-message" rows="4" class="w-full rounded-lg bg-background-light dark:bg-[#111722] border border-gray-300 dark:border-border-dark px-4 py-2 dark:text-white" placeholder="Digite sua mensagem aqui..."></textarea>
+                                </div>
+                                <button onclick="sendText()" class="w-full bg-primary hover:bg-primary-hover text-slate-900 font-bold py-3 rounded-lg transition-colors">Enviar Texto</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Image Form -->
+                    <div id="tab-image" class="tab-content hidden">
+                        <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-6">
+                            <h2 class="text-xl font-bold mb-4 dark:text-white">Enviar Imagem</h2>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Número</label>
+                                    <input type="text" id="image-number" class="w-full rounded-lg bg-background-light dark:bg-[#111722] border border-gray-300 dark:border-border-dark px-4 py-2 dark:text-white" placeholder="5511999999999">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">URL da Imagem</label>
+                                    <input type="text" id="image-url" class="w-full rounded-lg bg-background-light dark:bg-[#111722] border border-gray-300 dark:border-border-dark px-4 py-2 dark:text-white" placeholder="https://exemplo.com/imagem.png">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Legenda (Opcional)</label>
+                                    <input type="text" id="image-caption" class="w-full rounded-lg bg-background-light dark:bg-[#111722] border border-gray-300 dark:border-border-dark px-4 py-2 dark:text-white" placeholder="Uma bela imagem">
+                                </div>
+                                <button onclick="sendImage()" class="w-full bg-primary hover:bg-primary-hover text-slate-900 font-bold py-3 rounded-lg transition-colors">Enviar Imagem</button>
+                            </div>
+                        </div>
+                    </div>
+
+                     <!-- Video Form -->
+                     <div id="tab-video" class="tab-content hidden">
+                        <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-6">
+                            <h2 class="text-xl font-bold mb-4 dark:text-white">Enviar Vídeo</h2>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Número</label>
+                                    <input type="text" id="video-number" class="w-full rounded-lg bg-background-light dark:bg-[#111722] border border-gray-300 dark:border-border-dark px-4 py-2 dark:text-white" placeholder="5511999999999">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">URL do Vídeo</label>
+                                    <input type="text" id="video-url" class="w-full rounded-lg bg-background-light dark:bg-[#111722] border border-gray-300 dark:border-border-dark px-4 py-2 dark:text-white" placeholder="https://exemplo.com/video.mp4">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Legenda (Opcional)</label>
+                                    <input type="text" id="video-caption" class="w-full rounded-lg bg-background-light dark:bg-[#111722] border border-gray-300 dark:border-border-dark px-4 py-2 dark:text-white" placeholder="Veja este vídeo">
+                                </div>
+                                <button onclick="sendVideo()" class="w-full bg-primary hover:bg-primary-hover text-slate-900 font-bold py-3 rounded-lg transition-colors">Enviar Vídeo</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Audio Form -->
+                    <div id="tab-audio" class="tab-content hidden">
+                        <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-6">
+                            <h2 class="text-xl font-bold mb-4 dark:text-white">Enviar Áudio (PTT)</h2>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Número</label>
+                                    <input type="text" id="audio-number" class="w-full rounded-lg bg-background-light dark:bg-[#111722] border border-gray-300 dark:border-border-dark px-4 py-2 dark:text-white" placeholder="5511999999999">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">URL do Áudio (MP3/OGG)</label>
+                                    <input type="text" id="audio-url" class="w-full rounded-lg bg-background-light dark:bg-[#111722] border border-gray-300 dark:border-border-dark px-4 py-2 dark:text-white" placeholder="https://exemplo.com/audio.mp3">
+                                </div>
+                                <button onclick="sendAudio()" class="w-full bg-primary hover:bg-primary-hover text-slate-900 font-bold py-3 rounded-lg transition-colors">Enviar Áudio</button>
+                            </div>
+                        </div>
+                    </div>
+
+                     <!-- PIX Form -->
+                     <div id="tab-pix" class="tab-content hidden">
+                        <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-6">
+                            <h2 class="text-xl font-bold mb-4 dark:text-white">Enviar Chave PIX</h2>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Número</label>
+                                    <input type="text" id="pix-number" class="w-full rounded-lg bg-background-light dark:bg-[#111722] border border-gray-300 dark:border-border-dark px-4 py-2 dark:text-white" placeholder="5511999999999">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Chave PIX</label>
+                                    <input type="text" id="pix-key" class="w-full rounded-lg bg-background-light dark:bg-[#111722] border border-gray-300 dark:border-border-dark px-4 py-2 dark:text-white" placeholder="user@bank.com.br">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Tipo de Chave</label>
+                                    <input type="text" id="pix-type" class="w-full rounded-lg bg-background-light dark:bg-[#111722] border border-gray-300 dark:border-border-dark px-4 py-2 dark:text-white" placeholder="EMAIL, CPF, CNPJ, PHONE, EVP">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Nome do Beneficiário</label>
+                                    <input type="text" id="pix-name" class="w-full rounded-lg bg-background-light dark:bg-[#111722] border border-gray-300 dark:border-border-dark px-4 py-2 dark:text-white" placeholder="João da Silva">
+                                </div>
+                                <button onclick="sendPix()" class="w-full bg-primary hover:bg-primary-hover text-slate-900 font-bold py-3 rounded-lg transition-colors">Enviar PIX</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check Auth
+        if (!localStorage.getItem('user_token')) {
+            window.location.href = 'login.html';
+        }
+
+        const API_CONFIG = {
+            baseUrl: 'http://localhost:4000/api',
+            apiKey: 'change-this-key'
+        };
+        
+        // Theme
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+             document.documentElement.classList.toggle('dark');
+             localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        });
+
+        // Tabs Logic
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            // Show selected
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+            
+            // Update buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-primary/10', 'border-l-2', 'border-primary', 'text-slate-900', 'dark:text-white');
+                btn.classList.add('text-text-secondary-light', 'dark:text-text-secondary-dark');
+            });
+            
+            const activeBtn = document.getElementById(`btn-${tabName}`);
+            activeBtn.classList.remove('text-text-secondary-light', 'dark:text-text-secondary-dark');
+            activeBtn.classList.add('bg-primary/10', 'border-l-2', 'border-primary', 'text-slate-900', 'dark:text-white');
+        }
+
+        // Send Functions
+        function getInstance() {
+            const val = document.getElementById('instanceName').value;
+            if(!val) { alert('Digite o nome da instância!'); return null; }
+            return val;
+        }
+
+        async function apiRequest(endpoint, body) {
+            const instance = getInstance();
+            if(!instance) return;
+
+            try {
+                const response = await fetch(`${API_CONFIG.baseUrl}/messages/${instance}/${endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'x-api-key': API_CONFIG.apiKey },
+                    body: JSON.stringify(body)
+                });
+                const data = await response.json();
+                alert(JSON.stringify(data, null, 2));
+            } catch (err) {
+                console.error(err);
+                alert('Erro na requisição');
+            }
+        }
+
+        function sendText() {
+            apiRequest('send-text', {
+                number: document.getElementById('text-number').value,
+                message: document.getElementById('text-message').value
+            });
+        }
+        function sendImage() {
+            apiRequest('send-image', {
+                number: document.getElementById('image-number').value,
+                imageUrl: document.getElementById('image-url').value,
+                caption: document.getElementById('image-caption').value
+            });
+        }
+        function sendVideo() {
+             apiRequest('send-video', {
+                number: document.getElementById('video-number').value,
+                videoUrl: document.getElementById('video-url').value,
+                caption: document.getElementById('video-caption').value
+            });
+        }
+        function sendAudio() {
+             apiRequest('send-audio', {
+                number: document.getElementById('audio-number').value,
+                audioUrl: document.getElementById('audio-url').value
+            });
+        }
+        function sendPix() {
+             apiRequest('send-pix', {
+                number: document.getElementById('pix-number').value,
+                pixKey: document.getElementById('pix-key').value,
+                pixType: document.getElementById('pix-type').value,
+                pixName: document.getElementById('pix-name').value
+            });
+        }
+    </script>
+</body>
+</html>

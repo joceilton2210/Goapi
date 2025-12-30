@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    
+    <!-- SEO Meta Tags -->
+    <title>Gerenciar Instâncias WhatsApp - GO API WhatsApp Manager</title>
+    <meta name="description" content="Gerencie suas instâncias do WhatsApp com a GO API. Crie, conecte e monitore múltiplas instâncias. Automação profissional de mensagens e integrações.">
+    <meta name="keywords" content="WhatsApp API, GO API, gerenciar instâncias WhatsApp, múltiplas instâncias, automação WhatsApp, API mensagens, webhook WhatsApp">
+    <meta name="author" content="Time GO - Nakamura, Joceilton Gomes, Othon Righetti">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="pt-BR">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://goapi.com.br/instancia.html">
+    <meta property="og:title" content="Gerenciar Instâncias WhatsApp - GO API">
+    <meta property="og:description" content="Gerencie suas instâncias do WhatsApp com a GO API. Crie, conecte e monitore múltiplas instâncias de forma profissional.">
+    <meta property="og:image" content="https://goapi.com.br/logo.png">
+    <meta property="og:site_name" content="GO API WhatsApp">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://goapi.com.br/instancia.html">
+    <meta name="twitter:title" content="Gerenciar Instâncias WhatsApp - GO API">
+    <meta name="twitter:description" content="Gerencie suas instâncias do WhatsApp com a GO API. Crie, conecte e monitore múltiplas instâncias de forma profissional.">
+    <meta name="twitter:image" content="https://goapi.com.br/logo.png">
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="logo.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="logo.png">
+    <link rel="shortcut icon" href="logo.png" type="image/x-icon">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Tailwind Configuration -->
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#eaa800",
+                        "primary-hover": "#1d66f0",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111722",
+                        "surface-dark": "#192233",
+                        "surface-light": "#ffffff",
+                        "border-dark": "#232f48",
+                        "border-light": "#e2e8f0",
+                        "text-secondary-dark": "#92a4c9",
+                        "text-secondary-light": "#64748b",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-gray-50 dark:bg-background-dark min-h-screen flex flex-col font-display text-slate-900 dark:text-white transition-colors duration-200">
+    <!-- Top Navigation -->
+    <!-- Top Navigation -->
+    <header
+        class="border-b border-solid border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark sticky top-0 z-50">
+        <div class="flex items-center justify-center py-3 px-4 md:px-10 lg:px-20">
+            <div class="flex items-center justify-between w-full max-w-[1200px]">
+                <div class="flex items-center gap-6 text-slate-900 dark:text-white">
+                    <img src="logo_black.png" alt="GO API Logo" class="h-12 w-auto object-contain dark:hidden">
+                    <img src="logo_white.png" alt="GO API Logo" class="h-12 w-auto object-contain hidden dark:block">
+                    <a href="instancia.html"
+                        class="hidden md:block text-text-secondary-light dark:text-text-secondary-dark hover:text-white transition-colors text-sm font-medium">
+                        Dashboard
+                    </a>
+                    <a href="documentacao.html"
+                        class="hidden md:block text-primary font-semibold text-sm">
+                        Documentação
+                    </a>
+                    <a href="integracao.html"
+                        class="hidden md:block text-text-secondary-light dark:text-text-secondary-dark hover:text-white transition-colors text-sm font-medium">
+                        Integração
+                    </a>
+                    <a href="envio.html"
+                        class="hidden md:block text-primary font-semibold text-sm">
+                        Enviar Mensagens
+                    </a>
+                </div>
+                <div class="flex gap-6 items-center">
+                    <button id="theme-toggle"
+                        class="text-text-secondary-light dark:text-text-secondary-dark hover:text-white transition-colors">
+                        <span class="material-symbols-outlined dark:hidden">light_mode</span>
+                        <span class="material-symbols-outlined hidden dark:inline">dark_mode</span>
+                    </button>
+                    
+                    <!-- Language Dropdown -->
+                    <div class="relative">
+                        <button id="language-toggle"
+                            class="flex items-center gap-2 px-3 py-1.5 text-text-secondary-light dark:text-text-secondary-dark hover:text-white transition-colors text-sm font-semibold rounded-lg hover:bg-surface-dark">
+                            <span class="material-symbols-outlined text-[18px]">language</span>
+                            <span id="current-lang-text">PT</span>
+                            <span class="material-symbols-outlined text-[14px]">expand_more</span>
+                        </button>
+                        
+                        <div id="language-dropdown"
+                            class="hidden absolute top-full right-0 mt-2 w-44 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl overflow-hidden z-50">
+                            <button onclick="selectLanguage('pt')"
+                                class="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left">
+                                <span><img src="bra.png" alt="Bandeira Brasil" class="w-5 h-5 object-cover rounded"></span>
+                                <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Português</span>
+                            </button>
+                            <button onclick="selectLanguage('en')"
+                                class="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left">
+                                <span><img src="usa.png" alt="Bandeira EUA" class="w-5 h-5 object-cover rounded"></span>
+                                <span class="text-sm font-medium text-gray-700 dark:text-gray-200">English</span>
+                            </button>
+                            <button onclick="selectLanguage('es')"
+                                class="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left">
+                                <span><img src="esp.png" alt="Bandeira Espanha" class="w-5 h-5 object-cover rounded"></span>
+                                <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Español</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="h-8 w-[1px] bg-border-light dark:bg-border-dark"></div>
+                    <div class="flex items-center gap-3">
+                        <div class="text-right hidden sm:block">
+                            <p class="text-sm font-semibold">Admin User</p>
+                            <p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Pro Plan</p>
+                        </div>
+                        <div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-primary"
+                            data-alt="User profile picture placeholder"
+                            style='background-image: url("icone.png");'>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- Main Layout -->
+    <div class="layout-container flex h-full grow flex-col">
+        <div class="flex flex-1 justify-center py-8 px-4 md:px-10 lg:px-20">
+            <div class="layout-content-container flex flex-col max-w-[1200px] flex-1 gap-8">
+                <!-- Breadcrumbs -->
+                <nav aria-label="Breadcrumb" class="flex px-4">
+                    <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                        <li class="inline-flex items-center">
+                            <a class="inline-flex items-center text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-primary dark:hover:text-primary"
+                                href="#">
+                                <span class="material-symbols-outlined text-[18px] mr-2">home</span>
+                                <span data-i18n="home">Home</span>
+                            </a>
+                        </li>
+                        <li>
+                            <div class="flex items-center">
+                                <span
+                                    class="material-symbols-outlined text-text-secondary-light dark:text-text-secondary-dark text-[18px]">chevron_right</span>
+                                <span
+                                    class="ml-1 text-sm font-medium text-slate-900 dark:text-white md:ml-2" data-i18n="instances">Instâncias</span>
+                            </div>
+                        </li>
+                    </ol>
+                </nav>
+                <!-- Page Heading -->
+                <div class="flex flex-col md:flex-row justify-between gap-6 px-4">
+                    <div class="flex flex-col gap-2">
+                        <h1 class="text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em] text-slate-900 dark:text-white" data-i18n="my-instances">
+                            Gerenciar Instâncias
+                        </h1>
+                        <p class="text-text-secondary-light dark:text-text-secondary-dark text-base font-normal leading-normal max-w-2xl" data-i18n="instances-subtitle">
+                            Gerencie suas conexões do WhatsApp API. Crie novas instâncias, verifique o status da conexão
+                            e configure webhooks.
+                        </p>
+                    </div>
+                    <div class="flex items-end">
+                        <button
+                            class="flex items-center gap-2 bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark hover:border-primary text-slate-900 dark:text-white px-4 py-2 rounded-lg transition-all text-sm font-medium">
+                            <span class="material-symbols-outlined text-[20px]">refresh</span>
+                            Atualizar Status
+                        </button>
+                    </div>
+                </div>
+                <!-- Create New Instance Card -->
+                <div class="px-4">
+                    <div
+                        class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-6 shadow-sm">
+                        <div class="flex flex-col lg:flex-row gap-8 items-start">
+                            <div class="flex-1 w-full">
+                                <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1" data-i18n="new-connection">Nova Conexão</h3>
+                                <p class="text-text-secondary-light dark:text-text-secondary-dark text-sm mb-6" data-i18n="connection-desc">Dê um
+                                    nome amigável para identificar sua nova sessão do WhatsApp.</p>
+                                <div class="flex flex-col sm:flex-row gap-4 items-end">
+                                    <div class="w-full sm:flex-1">
+                                        <label
+                                            class="block text-sm font-medium text-slate-900 dark:text-white mb-2" data-i18n="instance-name">Nome
+                                            da Instância</label>
+                                        <div class="relative">
+                                            <div
+                                                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <span
+                                                    class="material-symbols-outlined text-text-secondary-light dark:text-text-secondary-dark">label</span>
+                                            </div>
+                                            <input
+                                                class="w-full bg-slate-50 dark:bg-[#111722] border border-border-light dark:border-border-dark text-slate-900 dark:text-white text-sm rounded-lg focus:ring-primary focus:border-primary block pl-10 p-3 placeholder-text-secondary-light dark:placeholder-text-secondary-dark transition-all"
+                                                placeholder="Ex: Marketing - Vendas" type="text" />
+                                        </div>
+                                    </div>
+                                    <button
+                                        class="w-full sm:w-auto flex items-center justify-center gap-2 bg-primary hover:bg-white hover:text-slate-900 text-slate-900 font-medium rounded-lg text-sm px-6 py-3 transition-all shadow-lg shadow-primary/20">
+                                        <span class="material-symbols-outlined text-[20px]">add_circle</span>
+                                        <span data-i18n="create-instance">Criar Instância</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="hidden lg:block w-px bg-border-light dark:bg-border-dark self-stretch"></div>
+                            <div class="w-full lg:w-1/3">
+                                <div
+                                    class="rounded-lg bg-blue-50 dark:bg-blue-900/20 p-4 border border-blue-100 dark:border-blue-900/30">
+                                    <div class="flex gap-3">
+                                        <span class="material-symbols-outlined text-primary mt-1">info</span>
+                                        <div>
+                                            <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-1" data-i18n="how-it-works">Como
+                                                funciona?</h4>
+                                            <p
+                                                class="text-xs text-text-secondary-light dark:text-text-secondary-dark leading-relaxed" data-i18n="how-desc">
+                                                Ao criar uma instância, um QR Code será gerado. Você precisará
+                                                escaneá-lo com seu aplicativo WhatsApp (Menu &gt; Aparelhos conectados)
+                                                para estabelecer a conexão.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Existing Instances Section -->
+                <div class="flex flex-col gap-4 px-4 mt-4">
+                    <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            Instâncias Ativas
+                            <span
+                                class="bg-primary/10 text-primary text-xs font-bold px-2.5 py-0.5 rounded-full border border-primary/20">3</span>
+                        </h3>
+                        <div class="relative w-full sm:w-72">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span
+                                    class="material-symbols-outlined text-text-secondary-light dark:text-text-secondary-dark text-[20px]">search</span>
+                            </div>
+                            <input
+                                class="w-full bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark text-slate-900 dark:text-white text-sm rounded-lg focus:ring-primary focus:border-primary block pl-10 p-2.5 placeholder-text-secondary-light dark:placeholder-text-secondary-dark"
+                                placeholder="Buscar instância..." type="text" />
+                        </div>
+                    </div>
+                    <!-- Instances Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 mt-2">
+                        <!-- Card 1: Connected -->
+                        <div
+                            class="group relative bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-5 hover:border-primary/50 transition-all shadow-sm hover:shadow-md">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="size-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400">
+                                        <span class="material-symbols-outlined">chat</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-slate-900 dark:text-white text-lg">Suporte Técnico
+                                        </h4>
+                                        <p
+                                            class="text-xs text-text-secondary-light dark:text-text-secondary-dark font-mono">
+                                            ID: inst_8823</p>
+                                    </div>
+                                </div>
+                                <div class="relative">
+                                    <button
+                                        class="text-text-secondary-light dark:text-text-secondary-dark hover:text-slate-900 dark:hover:text-white p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                                        <span class="material-symbols-outlined">more_vert</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 mb-6">
+                                <div class="h-2.5 w-2.5 rounded-full bg-green-500 animate-pulse"></div>
+                                <span class="text-sm font-medium text-green-600 dark:text-green-400">Conectado</span>
+                                <span
+                                    class="text-xs text-text-secondary-light dark:text-text-secondary-dark ml-auto">Bateria:
+                                    85%</span>
+                            </div>
+                            <div
+                                class="flex items-center justify-between pt-4 border-t border-border-light dark:border-border-dark gap-2">
+                                <div
+                                    class="text-xs text-text-secondary-light dark:text-text-secondary-dark flex items-center gap-1 truncate">
+                                    <span class="material-symbols-outlined text-[16px]">phone_iphone</span>
+                                    +55 11 9****-1234
+                                </div>
+                                <button
+                                    class="text-primary hover:text-dark-hover text-sm font-semibold flex items-center gap-1 transition-colors">
+                                    <span data-i18n="configure">Configurar</span>
+                                    <span class="material-symbols-outlined text-[16px]">settings</span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Card 2: Disconnected -->
+                        <div
+                            class="group relative bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-5 hover:border-red-500/50 transition-all shadow-sm">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="size-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400">
+                                        <span class="material-symbols-outlined">link_off</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-slate-900 dark:text-white text-lg">Bot de Vendas</h4>
+                                        <p
+                                            class="text-xs text-text-secondary-light dark:text-text-secondary-dark font-mono">
+                                            ID: inst_9941</p>
+                                    </div>
+                                </div>
+                                <div class="relative">
+                                    <button
+                                        class="text-text-secondary-light dark:text-text-secondary-dark hover:text-slate-900 dark:hover:text-white p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                                        <span class="material-symbols-outlined">more_vert</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 mb-6">
+                                <div class="h-2.5 w-2.5 rounded-full bg-red-500"></div>
+                                <span class="text-sm font-medium text-red-600 dark:text-red-400">Desconectado</span>
+                                <span
+                                    class="text-xs text-text-secondary-light dark:text-text-secondary-dark ml-auto">Desde:
+                                    2h atrás</span>
+                            </div>
+                            <div
+                                class="flex items-center justify-between pt-4 border-t border-border-light dark:border-border-dark gap-2">
+                                <div
+                                    class="text-xs text-text-secondary-light dark:text-text-secondary-dark flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[16px]">error</span>
+                                    Falha na autenticação
+                                </div>
+                                <button
+                                    class="bg-primary/10 hover:bg-primary/20 text-dark text-sm font-semibold px-3 py-1.5 rounded transition-colors flex items-center gap-1">
+                                    <span data-i18n="reconnect">Reconectar</span>
+                                    <span class="material-symbols-outlined text-[16px]">qr_code</span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Card 3: Pending/Creating -->
+                        <div
+                            class="group relative bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-5 hover:border-yellow-500/50 transition-all shadow-sm">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="size-12 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center text-yellow-600 dark:text-yellow-400">
+                                        <span class="material-symbols-outlined">pending</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-slate-900 dark:text-white text-lg">Marketing Promo
+                                        </h4>
+                                        <p
+                                            class="text-xs text-text-secondary-light dark:text-text-secondary-dark font-mono">
+                                            ID: inst_0021</p>
+                                    </div>
+                                </div>
+                                <div class="relative">
+                                    <button
+                                        class="text-text-secondary-light dark:text-text-secondary-dark hover:text-slate-900 dark:hover:text-white p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                                        <span class="material-symbols-outlined">more_vert</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 mb-6">
+                                <div class="h-2.5 w-2.5 rounded-full bg-yellow-500 animate-pulse"></div>
+                                <span class="text-sm font-medium text-yellow-600 dark:text-yellow-400">Aguardando
+                                    Leitura</span>
+                            </div>
+                            <div
+                                class="flex items-center justify-between pt-4 border-t border-border-light dark:border-border-dark gap-2">
+                                <div
+                                    class="text-xs text-text-secondary-light dark:text-text-secondary-dark flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[16px]">timer</span>
+                                    Expira em 45s
+                                </div>
+                                <button
+                                    class="text-primary hover:text-dark text-sm font-semibold flex items-center gap-1 transition-colors">
+                                    <span data-i18n="show-qr">Exibir QR Code</span>
+                                    <span class="material-symbols-outlined text-[16px]">visibility</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Footer Section (Optional for context) -->
+                <div class="px-4 mt-8 pb-10 flex flex-col items-center">
+                    <p class="text-text-secondary-light dark:text-text-secondary-dark text-sm text-center">
+                        Precisa de ajuda com a integração? <a class="text-primary hover:underline" href="#">Consulte a
+                            documentação</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer Bar - Full Width -->
+    <footer class="fixed bottom-0 left-0 right-0 w-full bg-gray-800 dark:bg-gray-900 border-t border-gray-700 dark:border-gray-800 py-3 z-50">
+        <div class="flex items-center justify-center gap-2 text-sm text-gray-200">
+            <span class="text-primary">GO API Whatsapp</span>
+            <span class="group relative cursor-help">
+                <span class="group-hover:hidden">Time GO</span>
+                <span class="hidden group-hover:inline"><strong> Nakamura</strong> / <strong>Joceilton Gomes</strong> / <strong>Augusto Oliveira</strong> / <strong>Othon Righetti</strong></span>
+            </span>
+        </div>
+    </footer>  
+
+    <script>
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+
+        // Check for saved theme preference or default to 'dark'
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        html.classList.toggle('dark', currentTheme === 'dark');
+
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            const newTheme = html.classList.contains('dark') ? 'dark' : 'light';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // Language toggle functionality
+        
+        // Translations object - MUST be declared first
+        const translations = {
+            'pt': {
+                // Breadcrumbs
+                'home': 'Home',
+                'instances': 'Instâncias',
+                
+                // Main section
+                'my-instances': 'Minhas Instâncias',
+                'instances-subtitle': 'Gerencie todas as suas conexões do WhatsApp em um só lugar',
+                
+                // New connection card
+                'new-connection': 'Nova Conexão',
+                'connection-desc': 'Dê um nome amigável para identificar sua nova sessão do WhatsApp.',
+                'instance-name': 'Nome da Instância',
+                'instance-placeholder': 'Ex: Marketing - Vendas',
+                'create-instance': 'Criar Instância',
+                'how-it-works': 'Como funciona?',
+                'how-desc': 'Ao criar uma instância, um QR Code será gerado. Você precisará escaneá-lo com seu aplicativo WhatsApp (Menu > Aparelhos conectados) para estabelecer a conexão.',
+                
+                // Instance cards
+                'connected': 'Conectado',
+                'disconnected': 'Desconectado',
+                'connecting': 'Conectando',
+                'configure': 'Configurar',
+                'reconnect': 'Reconectar',
+                'show-qr': 'Exibir QR Code',
+                'expires-in': 'Expira em',
+                'auth-failed': 'Falha na autenticação',
+                'waiting-scan': 'Aguardando escaneamento'
+            },
+            'en': {
+                // Breadcrumbs
+                'home': 'Home',
+                'instances': 'Instances',
+                
+                // Main section
+                'my-instances': 'My Instances',
+                'instances-subtitle': 'Manage all your WhatsApp connections in one place',
+                
+                // New connection card
+                'new-connection': 'New Connection',
+                'connection-desc': 'Give a friendly name to identify your new WhatsApp session.',
+                'instance-name': 'Instance Name',
+                'instance-placeholder': 'Ex: Marketing - Sales',
+                'create-instance': 'Create Instance',
+                'how-it-works': 'How it works?',
+                'how-desc': 'When creating an instance, a QR Code will be generated. You will need to scan it with your WhatsApp app (Menu > Linked Devices) to establish the connection.',
+                
+                // Instance cards
+                'connected': 'Connected',
+                'disconnected': 'Disconnected',
+                'connecting': 'Connecting',
+                'configure': 'Configure',
+                'reconnect': 'Reconnect',
+                'show-qr': 'Show QR Code',
+                'expires-in': 'Expires in',
+                'auth-failed': 'Authentication failed',
+                'waiting-scan': 'Waiting for scan'
+            },
+            'es': {
+                // Breadcrumbs
+                'home': 'Inicio',
+                'instances': 'Instancias',
+                
+                // Main section
+                'my-instances': 'Mis Instancias',
+                'instances-subtitle': 'Administra todas tus conexiones de WhatsApp en un solo lugar',
+                
+                // New connection card
+                'new-connection': 'Nueva Conexión',
+                'connection-desc': 'Dale un nombre amigable para identificar tu nueva sesión de WhatsApp.',
+                'instance-name': 'Nombre de la Instancia',
+                'instance-placeholder': 'Ej: Marketing - Ventas',
+                'create-instance': 'Crear Instancia',
+                'how-it-works': '¿Cómo funciona?',
+                'how-desc': 'Al crear una instancia, se generará un código QR. Deberás escanearlo con tu aplicación de WhatsApp (Menú > Dispositivos vinculados) para establecer la conexión.',
+                
+                // Instance cards
+                'connected': 'Conectado',
+                'disconnected': 'Desconectado',
+                'connecting': 'Conectando',
+                'configure': 'Configurar',
+                'reconnect': 'Reconectar',
+                'show-qr': 'Mostrar Código QR',
+                'expires-in': 'Expira en',
+                'auth-failed': 'Fallo de autenticación',
+                'waiting-scan': 'Esperando escaneo'
+            }
+        };
+
+        const languageToggle = document.getElementById('language-toggle');
+        const languageDropdown = document.getElementById('language-dropdown');
+        const currentLangText = document.getElementById('current-lang-text');
+        let currentLanguage = localStorage.getItem('language') || 'pt';
+
+        const languageNames = {
+            'pt': 'Português',
+            'en': 'English',
+            'es': 'Español'
+        };
+
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('language', lang);
+            currentLangText.textContent = languageNames[lang];
+            
+            // Update all translatable elements
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    element.innerHTML = translations[lang][key];
+                }
+            });
+            
+            // Close dropdown
+            languageDropdown.classList.add('hidden');
+        }
+
+        // Toggle dropdown
+        languageToggle.addEventListener('click', () => {
+            languageDropdown.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!languageToggle.contains(e.target) && !languageDropdown.contains(e.target)) {
+                languageDropdown.classList.add('hidden');
+            }
+        });
+
+        // Function to select language (called from dropdown buttons)
+        function selectLanguage(lang) {
+            changeLanguage(lang);
+        }
+
+        // Initialize language
+        changeLanguage(currentLanguage);
+
+        // Auth & Config
+        if (!localStorage.getItem('user_token')) {
+            window.location.href = 'login.html';
+        }
+
+        const API_CONFIG = {
+            baseUrl: 'http://localhost:4000/api',
+            apiKey: 'change-this-key'
+        };
+
+        // API Integration
+        async function fetchInstances() {
+            try {
+                const response = await fetch(`${API_CONFIG.baseUrl}/instances`, {
+                    headers: { 'x-api-key': API_CONFIG.apiKey }
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    renderInstances(data.data);
+                }
+            } catch (error) {
+                console.error('Error fetching instances:', error);
+                // Fallback to empty state or show error
+                document.getElementById('instances-grid').innerHTML = ''; 
+            }
+        }
+
+        async function createInstance(instanceName) {
+            try {
+                const response = await fetch(`${API_CONFIG.baseUrl}/instances`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': API_CONFIG.apiKey
+                    },
+                    body: JSON.stringify({ instanceId: instanceName })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Redirect to QR code page with instance ID
+                    window.location.href = `qr.html?instance=${instanceName}`;
+                } else {
+                    alert('Erro ao criar instância: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error creating instance:', error);
+                alert('Erro ao conectar com o servidor');
+            }
+        }
+
+        function renderInstances(instances) {
+            const grid = document.getElementById('instances-grid');
+            // Keep the "New Connection" card
+            const newConnectionCard = grid.firstElementChild.outerHTML;
+            grid.innerHTML = newConnectionCard + instances.map(instance => `
+                <div class="bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-xl p-6 hover:shadow-lg transition-all duration-300 group relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
+                        <button onclick="deleteInstance('${instance.instanceId}')" class="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors" title="Deletar">
+                            <span class="material-symbols-outlined text-[20px]">delete</span>
+                        </button>
+                    </div>
+                    
+                    <div class="flex items-start justify-between mb-6">
+                        <div class="flex items-center gap-4">
+                            <div class="relative">
+                                <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xl">
+                                    ${instance.instanceId.substring(0, 2).toUpperCase()}
+                                </div>
+                                <div class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white dark:border-surface-dark ${instance.isConnected ? 'bg-emerald-500' : 'bg-red-500'}"></div>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg text-slate-800 dark:text-white">${instance.instanceId}</h3>
+                                <p class="text-sm text-text-secondary-light dark:text-text-secondary-dark font-medium flex items-center gap-1.5">
+                                    <span class="w-1.5 h-1.5 rounded-full ${instance.isConnected ? 'bg-emerald-500' : 'bg-red-500'}"></span>
+                                    ${instance.isConnected ? translations[currentLanguage]['connected'] || 'Conectado' : translations[currentLanguage]['disconnected'] || 'Desconectado'}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        ${instance.isConnected ? `
+                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-700">
+                            <span class="text-xs font-medium text-text-secondary-light dark:text-text-secondary-dark uppercase tracking-wider">Status</span>
+                            <span class="text-sm font-bold text-emerald-500">Ativo</span>
+                        </div>
+                        ` : `
+                        <a href="qr.html?instance=${instance.instanceId}" class="w-full py-2.5 px-4 bg-primary hover:bg-primary-dark text-white rounded-lg font-medium transition-all duration-300 flex items-center justify-center gap-2 group-hover:shadow-lg group-hover:shadow-primary/20">
+                            <span data-i18n="reconnect">Reconectar</span>
+                            <span class="material-symbols-outlined text-[18px]">qr_code_2</span>
+                        </a>
+                        `}
+                    </div>
+                </div>
+            `).join('');
+
+            // Re-bind click event for create button
+            const createBtn = document.querySelector('button[onclick="alert(\'Funcionalidade de criar nova instância\')"]');
+            if (createBtn) {
+                createBtn.removeAttribute('onclick');
+                createBtn.addEventListener('click', () => {
+                    const name = prompt(translations[currentLanguage]['instance-placeholder'] || 'Nome da instância:');
+                    if (name) createInstance(name);
+                });
+            }
+        }
+        
+        // Load instances on start
+        fetchInstances();
+
+    </script>
+</body>
+
+</html>

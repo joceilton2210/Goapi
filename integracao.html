@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html class="dark" lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Integrações - G O API</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="logo.png">
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="assets/js/config.js"></script>
+
+    <!-- Tailwind Configuration -->
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#eaa800",
+                        "primary-hover": "#1d66f0",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111722",
+                        "surface-dark": "#192233",
+                        "surface-light": "#ffffff",
+                        "border-dark": "#232f48",
+                        "border-light": "#e2e8f0",
+                        "text-secondary-dark": "#92a4c9",
+                        "text-secondary-light": "#64748b",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "mono": ["Fira Code", "monospace"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        /* macOS-like Code Block specific styles */
+        .code-block-macos {
+            background: #1e1e2e;
+            border-radius: 8px;
+            overflow: hidden;
+            font-family: 'Fira Code', monospace;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            margin-bottom: 1.5rem;
+        }
+
+        .code-block-header {
+            background: #2b2b3b;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #3a3a4e;
+        }
+
+        .macos-buttons {
+            display: flex;
+            gap: 6px;
+        }
+
+        .macos-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .macos-btn:hover {
+            opacity: 0.8;
+        }
+
+        .macos-btn-close { background: #ff5f57; }
+        .macos-btn-minimize { background: #febc2e; }
+        .macos-btn-maximize { background: #28c840; }
+
+        .code-block-title {
+            font-size: 13px;
+            color: #92a4c9;
+            font-weight: 500;
+        }
+
+        .copy-btn {
+            background: #3a3a4e;
+            color: #92a4c9;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .copy-btn:hover {
+            background: #4a4a5e;
+            color: #fff;
+        }
+
+        .copy-btn.copied {
+            background: #28c840;
+            color: #fff;
+        }
+
+        .code-content {
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .code-content pre {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.6;
+            background: transparent; 
+            padding: 0;
+            border: none;
+        }
+        
+        /* Syntax highlighting */
+        .token-keyword { color: #ff79c6; }
+        .token-string { color: #f1fa8c; }
+        .token-number { color: #bd93f9; }
+        .token-comment { color: #6272a4; font-style: italic; }
+        .token-function { color: #8be9fd; }
+        .token-property { color: #f1fa8c; }
+        
+        pre code { color: #f8f8f2; }
+    </style>
+    <script>
+        function copyCode(button, codeId) {
+            const codeElement = document.getElementById(codeId);
+            const code = codeElement.textContent;
+            
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = button.innerHTML;
+                button.innerHTML = '<span class="material-symbols-outlined" style="font-size: 16px;">check</span> Copiado!';
+                button.classList.add('copied');
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.classList.remove('copied');
+                }, 2000);
+            });
+        }
+    </script>
+</head>
+
+<body
+    class="bg-gray-50 dark:bg-background-dark min-h-screen flex flex-col font-display text-slate-900 dark:text-white transition-colors duration-200">
+    
+    <!-- Top Navigation -->
+    <header
+        class="border-b border-solid border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark sticky top-0 z-50">
+        <div class="flex items-center justify-center py-3 px-4 md:px-10 lg:px-20">
+            <div class="flex items-center justify-between w-full max-w-[1200px]">
+                <div class="flex items-center gap-6 text-slate-900 dark:text-white">
+                    <img src="logo_black.png" alt="GO API Logo" class="h-12 w-auto object-contain dark:hidden">
+                    <img src="logo_white.png" alt="GO API Logo" class="h-12 w-auto object-contain hidden dark:block">
+                    <a href="instancia.html"
+                        class="hidden md:block text-text-secondary-light dark:text-text-secondary-dark hover:text-white transition-colors text-sm font-medium">
+                        Dashboard
+                    </a>
+                    <a href="documentacao.html"
+                        class="hidden md:block text-text-secondary-light dark:text-text-secondary-dark hover:text-white transition-colors text-sm font-medium">
+                        Documentação
+                    </a>
+                    <a href="integracao.html"
+                        class="hidden md:block text-primary font-semibold text-sm">
+                        Integração
+                    </a>
+                    <a href="envio.html"
+                        class="hidden md:block text-text-secondary-light dark:text-text-secondary-dark hover:text-white transition-colors text-sm font-medium">
+                        Enviar Mensagens
+                    </a>
+                </div>
+                <div class="flex gap-6 items-center">
+                    <button id="theme-toggle"
+                        class="text-text-secondary-light dark:text-text-secondary-dark hover:text-white transition-colors">
+                        <span class="material-symbols-outlined dark:hidden">light_mode</span>
+                        <span class="material-symbols-outlined hidden dark:inline">dark_mode</span>
+                    </button>
+                    
+                    <!-- Language Dropdown -->
+                    <div class="relative">
+                        <button id="language-toggle"
+                            class="flex items-center gap-2 px-3 py-1.5 text-text-secondary-light dark:text-text-secondary-dark hover:text-white transition-colors text-sm font-semibold rounded-lg hover:bg-surface-dark">
+                            <span class="material-symbols-outlined text-[18px]">language</span>
+                            <span id="current-lang-text">PT</span>
+                            <span class="material-symbols-outlined text-[14px]">expand_more</span>
+                        </button>
+                        
+                        <div id="language-dropdown"
+                            class="hidden absolute top-full right-0 mt-2 w-44 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl overflow-hidden z-50">
+                            <button onclick="selectLanguage('pt')"
+                                class="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left">
+                                <span><img src="bra.png" alt="Bandeira Brasil" class="w-5 h-5 object-cover rounded"></span>
+                                <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Português</span>
+                            </button>
+                            <button onclick="selectLanguage('en')"
+                                class="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left">
+                                <span><img src="usa.png" alt="Bandeira EUA" class="w-5 h-5 object-cover rounded"></span>
+                                <span class="text-sm font-medium text-gray-700 dark:text-gray-200">English</span>
+                            </button>
+                            <button onclick="selectLanguage('es')"
+                                class="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left">
+                                <span><img src="esp.png" alt="Bandeira Espanha" class="w-5 h-5 object-cover rounded"></span>
+                                <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Español</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="h-8 w-[1px] bg-border-light dark:bg-border-dark"></div>
+                    <div class="flex items-center gap-3">
+                        <div class="text-right hidden sm:block">
+                            <p class="text-sm font-semibold">Admin User</p>
+                            <p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Pro Plan</p>
+                        </div>
+                        <div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-primary"
+                            data-alt="User profile picture placeholder"
+                            style='background-image: url("icone.png");'>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="layout-container flex h-full grow flex-col">
+        <div class="flex flex-1 py-8 px-4 md:px-10 lg:px-20">
+            <div class="flex w-full max-w-[1200px] mx-auto gap-8">
+                
+                <!-- Sidebar Navigation -->
+                <aside class="hidden lg:block w-64 flex-shrink-0">
+                    <div class="sticky top-24">
+                        <nav class="flex flex-col gap-2">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-text-secondary-light dark:text-text-secondary-dark mb-2">
+                                Ferramentas
+                            </h3>
+                            <a href="#typebot" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-900 dark:text-white bg-primary/10 border-l-2 border-primary">
+                                Typebot
+                            </a>
+                            <a href="#n8n" class="px-3 py-2 rounded-lg text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-white hover:bg-surface-dark transition-colors">
+                                n8n
+                            </a>
+                            <a href="#chatwoot" class="px-3 py-2 rounded-lg text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-white hover:bg-surface-dark transition-colors">
+                                Chatwoot
+                            </a>
+
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-text-secondary-light dark:text-text-secondary-dark mb-2 mt-6">
+                                Linguagens
+                            </h3>
+                            <a href="#php" class="px-3 py-2 rounded-lg text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-white hover:bg-surface-dark transition-colors">
+                                PHP
+                            </a>
+                            <a href="#node" class="px-3 py-2 rounded-lg text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-white hover:bg-surface-dark transition-colors">
+                                Node.js
+                            </a>
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- Main Content -->
+                <main class="flex-1 min-w-0">
+                    <div class="flex flex-col gap-8">
+                        
+                        <!-- Header -->
+                        <div class="flex flex-col gap-3">
+                            <h1 class="text-4xl md:text-5xl font-black leading-tight tracking-[-0.033em] text-slate-900 dark:text-white">
+                                Central de Integração
+                            </h1>
+                            <p class="text-text-secondary-light dark:text-text-secondary-dark text-lg font-normal leading-normal max-w-3xl">
+                                Exemplos práticos e códigos prontos para copiar e colar no seu sistema.
+                            </p>
+                        </div>
+
+                        <!-- Typebot -->
+                        <section id="typebot" class="scroll-mt-24">
+                            <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-6">
+                                <div class="flex items-center gap-3 mb-6">
+                                    <div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500">
+                                        <span class="material-symbols-outlined">smart_toy</span>
+                                    </div>
+                                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Typebot</h2>
+                                </div>
+                                <p class="text-text-secondary-light dark:text-text-secondary-dark mb-4">
+                                    Use o bloco <strong>HTTP Request</strong> para enviar mensagens dentro do seu fluxo.
+                                </p>
+
+                                <div class="code-block-macos">
+                                    <div class="code-block-header">
+                                        <div class="macos-buttons">
+                                            <div class="macos-btn macos-btn-close"></div><div class="macos-btn macos-btn-minimize"></div><div class="macos-btn macos-btn-maximize"></div>
+                                        </div>
+                                        <div class="code-block-title">JSON Configuration</div>
+                                        <button class="copy-btn" onclick="copyCode(this, 'code-typebot')">
+                                            <span class="material-symbols-outlined" style="font-size: 16px;">content_copy</span>Copiar
+                                        </button>
+                                    </div>
+                                    <div class="code-content">
+<pre id="code-typebot">{
+  <span class="token-property">"url"</span>: <span class="token-string">"{{API_URL}}/messages/{{INSTANCE}}/send-text"</span>,
+  <span class="token-property">"method"</span>: <span class="token-string">"POST"</span>,
+  <span class="token-property">"headers"</span>: {
+    <span class="token-property">"x-api-key"</span>: <span class="token-string">"{{API_KEY}}"</span>,
+    <span class="token-property">"Content-Type"</span>: <span class="token-string">"application/json"</span>
+  },
+  <span class="token-property">"body"</span>: {
+    <span class="token-property">"number"</span>: <span class="token-string">"{{remoteJid}}"</span>,
+    <span class="token-property">"message"</span>: <span class="token-string">"Olá! Vim pelo Typebot."</span>
+  }
+}</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- n8n -->
+                        <section id="n8n" class="scroll-mt-24">
+                            <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-6">
+                                <div class="flex items-center gap-3 mb-6">
+                                    <div class="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center text-red-500">
+                                        <span class="material-symbols-outlined">hub</span>
+                                    </div>
+                                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">n8n</h2>
+                                </div>
+                                
+                                <div class="code-block-macos">
+                                    <div class="code-block-header">
+                                        <div class="macos-buttons">
+                                            <div class="macos-btn macos-btn-close"></div><div class="macos-btn macos-btn-minimize"></div><div class="macos-btn macos-btn-maximize"></div>
+                                        </div>
+                                        <div class="code-block-title">HTTP Request Node</div>
+                                        <button class="copy-btn" onclick="copyCode(this, 'code-n8n')">
+                                            <span class="material-symbols-outlined" style="font-size: 16px;">content_copy</span>Copiar
+                                        </button>
+                                    </div>
+                                    <div class="code-content">
+<pre id="code-n8n"><span class="token-comment">// Configurações do Nó HTTP Request</span>
+Method: POST
+URL: http://api-whatsapp:4000/api/messages/MINHA_INSTANCIA/send-text
+Headers:
+  x-api-key: change-this-key
+Body Parameters:
+  number: {{ $json.body.number }}
+  message: {{ $json.body.message }}</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Chatwoot -->
+                        <section id="chatwoot" class="scroll-mt-24">
+                            <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-6">
+                                <div class="flex items-center gap-3 mb-6">
+                                    <div class="w-10 h-10 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-500">
+                                        <span class="material-symbols-outlined">chat_bubble</span>
+                                    </div>
+                                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Chatwoot</h2>
+                                </div>
+                                
+                                <div class="code-block-macos">
+                                    <div class="code-block-header">
+                                        <div class="macos-buttons">
+                                            <div class="macos-btn macos-btn-close"></div><div class="macos-btn macos-btn-minimize"></div><div class="macos-btn macos-btn-maximize"></div>
+                                        </div>
+                                        <div class="code-block-title">Webhook Configuration</div>
+                                        <button class="copy-btn" onclick="copyCode(this, 'code-chatwoot')">
+                                            <span class="material-symbols-outlined" style="font-size: 16px;">content_copy</span>Copiar
+                                        </button>
+                                    </div>
+                                    <div class="code-content">
+<pre id="code-chatwoot">URL do Webhook (Chatwoot):
+http://api-whatsapp:4000/api/webhooks/MINHA_INSTANCIA
+
+Eventos Selecionados:
+[x] Mensagem Criada
+[x] Mensagem Atualizada</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- PHP -->
+                        <section id="php" class="scroll-mt-24">
+                            <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-6">
+                                <div class="flex items-center gap-3 mb-6">
+                                    <div class="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-500">
+                                        <span class="material-symbols-outlined">php</span>
+                                    </div>
+                                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">PHP (Backend)</h2>
+                                </div>
+                                
+                                <div class="code-block-macos">
+                                    <div class="code-block-header">
+                                        <div class="macos-buttons">
+                                            <div class="macos-btn macos-btn-close"></div><div class="macos-btn macos-btn-minimize"></div><div class="macos-btn macos-btn-maximize"></div>
+                                        </div>
+                                        <div class="code-block-title">function.php</div>
+                                        <button class="copy-btn" onclick="copyCode(this, 'code-php')">
+                                            <span class="material-symbols-outlined" style="font-size: 16px;">content_copy</span>Copiar
+                                        </button>
+                                    </div>
+                                    <div class="code-content">
+<pre id="code-php"><span class="token-keyword">&lt;?php</span>
+
+<span class="token-function">function</span> enviarWhatsApp(<span class="token-property">$numero</span>, <span class="token-property">$mensagem</span>) {
+    <span class="token-property">$curl</span> = curl_init();
+
+    <span class="token-property">$dados</span> = [
+        <span class="token-string">"number"</span> => <span class="token-property">$numero</span>,
+        <span class="token-string">"message"</span> => <span class="token-property">$mensagem</span>
+    ];
+
+    curl_setopt_array(<span class="token-property">$curl</span>, [
+        CURLOPT_URL => <span class="token-string">"http://localhost:4000/api/messages/MINHA_INSTANCIA/send-text"</span>,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CUSTOMREQUEST => <span class="token-string">"POST"</span>,
+        CURLOPT_POSTFIELDS => json_encode(<span class="token-property">$dados</span>),
+        CURLOPT_HTTPHEADER => [
+            <span class="token-string">"x-api-key: change-this-key"</span>,
+            <span class="token-string">"Content-Type: application/json"</span>
+        ],
+    ]);
+
+    <span class="token-property">$response</span> = curl_exec(<span class="token-property">$curl</span>);
+    curl_close(<span class="token-property">$curl</span>);
+    
+    return <span class="token-property">$response</span>;
+}
+<span class="token-keyword">?&gt;</span></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Node.js -->
+                        <section id="node" class="scroll-mt-24">
+                            <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-6">
+                                <div class="flex items-center gap-3 mb-6">
+                                    <div class="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center text-green-500">
+                                        <span class="material-symbols-outlined">javascript</span>
+                                    </div>
+                                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Node.js (Axios)</h2>
+                                </div>
+                                
+                                <div class="code-block-macos">
+                                    <div class="code-block-header">
+                                        <div class="macos-buttons">
+                                            <div class="macos-btn macos-btn-close"></div><div class="macos-btn macos-btn-minimize"></div><div class="macos-btn macos-btn-maximize"></div>
+                                        </div>
+                                        <div class="code-block-title">app.js</div>
+                                        <button class="copy-btn" onclick="copyCode(this, 'code-node')">
+                                            <span class="material-symbols-outlined" style="font-size: 16px;">content_copy</span>Copiar
+                                        </button>
+                                    </div>
+                                    <div class="code-content">
+<pre id="code-node"><span class="token-keyword">const</span> axios = require(<span class="token-string">'axios'</span>);
+
+<span class="token-keyword">async function</span> sendMsg() {
+  <span class="token-keyword">try</span> {
+    <span class="token-keyword">const</span> response = <span class="token-keyword">await</span> axios.post(
+      <span class="token-string">'http://localhost:4000/api/messages/MINHA_INSTANCIA/send-text'</span>,
+      {
+        number: <span class="token-string">'5511999999999'</span>,
+        message: <span class="token-string">'Olá via Node.js!'</span>
+      },
+      {
+        headers: {
+          <span class="token-string">'x-api-key'</span>: <span class="token-string">'change-this-key'</span>
+        }
+      }
+    );
+    console.log(response.data);
+  } <span class="token-keyword">catch</span> (error) {
+    console.error(error);
+  }
+}
+sendMsg();</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Theme Toggle Logic
+        const themeToggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        
+        // Initialize theme from localStorage
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            html.classList.add('dark');
+        } else {
+            html.classList.remove('dark');
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            if (html.classList.contains('dark')) {
+                localStorage.setItem('theme', 'dark');
+            } else {
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+        // Language Toggle Logic
+        const languageToggle = document.getElementById('language-toggle');
+        const languageDropdown = document.getElementById('language-dropdown');
+        const currentLangText = document.getElementById('current-lang-text');
+        
+        languageToggle.addEventListener('click', () => {
+            languageDropdown.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!languageToggle.contains(e.target) && !languageDropdown.contains(e.target)) {
+                languageDropdown.classList.add('hidden');
+            }
+        });
+
+        function selectLanguage(lang) {
+            localStorage.setItem('language', lang);
+            currentLangText.textContent = lang.toUpperCase();
+            languageDropdown.classList.add('hidden');
+            // Implement actual translation logic here if needed
+        }
+    </script>
+</body>
+</html>

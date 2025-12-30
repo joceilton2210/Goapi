@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    
+    <!-- SEO Meta Tags -->
+    <title>Login - GO API WhatsApp Manager | Acesse sua Conta</title>
+    <meta name="description" content="Acesse sua conta GO API WhatsApp. Gerencie instâncias, envie mensagens automatizadas e integre o WhatsApp ao seu sistema de forma profissional e segura.">
+    <meta name="keywords" content="WhatsApp API login, GO API, acessar WhatsApp API, gerenciar WhatsApp, automação mensagens, API WhatsApp Brasil">
+    <meta name="author" content="Time GO - Nakamura, Joceilton Gomes, Othon Righetti">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="pt-BR">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://goapi.com.br/login.html">
+    <meta property="og:title" content="Login - GO API WhatsApp Manager">
+    <meta property="og:description" content="Acesse sua conta GO API WhatsApp. Gerencie instâncias e automações de mensagens de forma profissional.">
+    <meta property="og:image" content="https://goapi.com.br/logo.png">
+    <meta property="og:site_name" content="GO API WhatsApp">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://goapi.com.br/login.html">
+    <meta name="twitter:title" content="Login - GO API WhatsApp Manager">
+    <meta name="twitter:description" content="Acesse sua conta GO API WhatsApp. Gerencie instâncias e automações de mensagens de forma profissional.">
+    <meta name="twitter:image" content="https://goapi.com.br/logo.png">
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="logo.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="logo.png">
+    <link rel="shortcut icon" href="logo.png" type="image/x-icon">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#eaa800",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-900 dark:text-white antialiased">
+    <div class="relative flex min-h-screen w-full flex-col overflow-hidden">
+        <!-- Background Elements for Modern Feel -->
+        <div class="absolute inset-0 z-0 overflow-hidden">
+            <!-- Gradient Mesh -->
+            <div class="absolute top-[-20%] left-[-10%] h-[500px] w-[500px] rounded-full bg-primary/20 blur-[120px]">
+            </div>
+            <div
+                class="absolute bottom-[-10%] right-[-5%] h-[400px] w-[400px] rounded-full bg-purple-600/10 blur-[100px]">
+            </div>
+        </div>
+        <div class="relative z-10 flex h-full grow flex-col items-center justify-center p-4">
+            <!-- Main Card Container -->
+            <div
+                class="w-full max-w-[420px] rounded-2xl border border-gray-200 bg-white/80 p-5 shadow-xl backdrop-blur-md dark:border-gray-800 dark:bg-[#192233]/90 md:p-7">
+                <!-- Logo / Icon Area -->
+                <div class="mb-5 flex justify-center">
+                    <div
+                        class="flex h-24 w-24 items-center justify-center rounded-xl">
+                        <img src="icone.png" alt="GO API Logo" class="w-24 h-24 object-contain">
+                    </div>
+                </div>
+                <!-- Header Section -->
+                <div class="mb-5 text-center">
+                    <h1 class="text-2xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white" data-i18n="login-title">
+                        Acesse sua conta
+                    </h1>
+                    <p class="mt-2 text-sm font-normal text-gray-500 dark:text-gray-400" data-i18n="login-subtitle">
+                        Gerencie suas instâncias da API do WhatsApp.
+                    </p>
+                </div>
+                <!-- Form Section -->
+                <form class="flex flex-col gap-4" id="loginForm">
+                    <!-- usuario Field -->
+                    <div class="flex flex-col gap-2">
+                        <label class="text-sm font-medium leading-none text-gray-700 dark:text-gray-200" for="usuario" data-i18n="email-label">
+                            Usuário
+                        </label>
+                        <div class="relative">
+                            <input
+                                class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-3.5 text-base text-gray-900 placeholder:text-gray-400 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary dark:border-[#324467] dark:bg-[#111722] dark:text-white dark:placeholder:text-[#92a4c9] dark:focus:border-primary"
+                                id="usuario" placeholder="usuario" required="" type="text">
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
+                                <span class="material-symbols-outlined text-gray-400 dark:text-[#92a4c9]"
+                                    style="font-size: 20px;">email</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Senha Field -->
+                    <div class="flex flex-col gap-2">
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm font-medium leading-none text-gray-700 dark:text-gray-200"
+                                for="senha" data-i18n="password-label">
+                                Senha
+                            </label>
+                        </div>
+                        <div class="relative">
+                            <input
+                                class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-3.5 text-base text-gray-900 placeholder:text-gray-400 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary dark:border-[#324467] dark:bg-[#111722] dark:text-white dark:placeholder:text-[#92a4c9] dark:focus:border-primary"
+                                id="senha" placeholder="senha" required="" type="password" />
+                            <button
+                                class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-gray-600 dark:text-[#92a4c9] dark:hover:text-white transition-colors"
+                                type="button">
+                                <span class="material-symbols-outlined" style="font-size: 20px;">visibility</span>
+                            </button>
+                        </div>
+                        <div class="flex justify-end mt-1">
+                            <a class="text-sm font-medium text-primary hover:text-primary/80 hover:underline" href="#" data-i18n="forgot-password">
+                                Esqueceu a senha?
+                            </a>
+                        </div>
+                    </div>
+                    <!-- Submit Button -->
+                    <button
+                        class="mt-2 flex w-full items-center justify-center rounded-lg bg-primary py-3.5 text-base font-bold text-black shadow-lg shadow-primary/25 transition-all hover:bg-primary/90 hover:shadow-primary/40 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-[#192233]" data-i18n="login-button">
+                        Entrar
+                    </button>
+                </form>
+                <!-- Footer Section -->
+                <div class="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
+                    <p>
+                        <span data-i18n="register-text">Ainda não tem uma conta?</span>
+                        <a class="font-semibold text-primary hover:text-primary/80 hover:underline" href="#" data-i18n="register-link">
+                            Criar conta
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div> 
+   <!-- Footer Bar - Full Width -->
+    <footer class="fixed bottom-0 left-0 right-0 w-full bg-gray-800 dark:bg-gray-900 border-t border-gray-700 dark:border-gray-800 py-3 z-50">
+        <div class="flex items-center justify-center gap-2 text-sm text-gray-200">
+            <span class="text-primary">GO API Whatsapp</span>
+            <span class="group relative cursor-help">
+                <span class="group-hover:hidden">Time GO</span>
+                <span class="hidden group-hover:inline"><strong> Nakamura</strong> / <strong>Joceilton Gomes</strong> / <strong>Augusto Oliveira</strong> / <strong>Othon Righetti</strong></span>
+            </span>
+        </div>
+    </footer>  
+   
+    <!-- Language Dropdown -->
+    <div class="fixed top-6 right-6 z-50">
+        <div class="relative">
+            <button id="language-toggle"
+                class="flex items-center gap-2 px-4 py-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105 text-gray-700 dark:text-gray-200 font-semibold text-sm">
+                <span class="material-symbols-outlined text-[20px]">language</span>
+                <span id="current-lang-text">Português</span>
+                <span class="material-symbols-outlined text-[16px]">expand_more</span>
+            </button>
+            
+            <!-- Dropdown Menu -->
+            <div id="language-dropdown"
+                class="hidden absolute top-full right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl overflow-hidden">
+                <button onclick="selectLanguage('pt')"
+                    class="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left">
+                    <span class="text-2xl"><img src="bra.png" alt="Bandeira Brasil" class="w-6 h-6 object-cover rounded"></span>
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Português</span>
+                </button>
+                <button onclick="selectLanguage('en')"
+                    class="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left">
+                    <span class="text-2xl"><img src="usa.png" alt="Bandeira EUA" class="w-6 h-6 object-cover rounded"></span>
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">English</span>
+                </button>
+                <button onclick="selectLanguage('es')"
+                    class="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left">
+                    <span class="text-2xl"><img src="esp.png" alt="Bandeira Espanha" class="w-6 h-6 object-cover rounded"></span>
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Español</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Form Toggle Logic
+        const loginForm = document.getElementById('loginForm');
+        const formTitle = document.querySelector('[data-i18n="login-title"]');
+        const formSubtitle = document.querySelector('[data-i18n="login-subtitle"]');
+        const submitBtn = document.querySelector('[data-i18n="login-button"]');
+        const switchText = document.querySelector('[data-i18n="register-text"]');
+        const switchLink = document.querySelector('[data-i18n="register-link"]');
+        
+        let isLogin = true;
+
+        switchLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            isLogin = !isLogin;
+            
+            if (isLogin) {
+                formTitle.textContent = translations[currentLanguage]['login-title'];
+                formSubtitle.textContent = translations[currentLanguage]['login-subtitle'];
+                submitBtn.textContent = translations[currentLanguage]['login-button'];
+                switchText.textContent = translations[currentLanguage]['register-text'];
+                switchLink.textContent = translations[currentLanguage]['register-link'];
+                formTitle.setAttribute('data-i18n', 'login-title'); // Restore attr for lang switch
+            } else {
+                formTitle.textContent = currentLanguage === 'pt' ? 'Criar nova conta' : (currentLanguage === 'es' ? 'Crear nueva cuenta' : 'Create new account');
+                formSubtitle.textContent = currentLanguage === 'pt' ? 'Preencha os dados para se cadastrar.' : (currentLanguage === 'es' ? 'Complete los datos para registrarse.' : 'Fill in the details to register.');
+                submitBtn.textContent = currentLanguage === 'pt' ? 'Cadastrar' : (currentLanguage === 'es' ? 'Registrarse' : 'Sign Up');
+                switchText.textContent = currentLanguage === 'pt' ? 'Já tem uma conta?' : (currentLanguage === 'es' ? '¿Ya tienes una cuenta?' : 'Already have an account?');
+                switchLink.textContent = currentLanguage === 'pt' ? 'Fazer Login' : (currentLanguage === 'es' ? 'Iniciar Sesión' : 'Sign In');
+                
+                // Remove data-i18n strictly for the title during toggle to avoid conflict, 
+                // or we could add new keys to translations object. For now simple text replacement.
+            }
+        });
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const usuario = document.getElementById('usuario').value;
+            const senha = document.getElementById('senha').value;
+            
+            if(usuario && senha) {
+                // Simulação de Sucesso
+                localStorage.setItem('user_token', 'demo-token');
+                
+                if (!isLogin) {
+                    alert('Cadastro realizado com sucesso! Bem-vindo.');
+                }
+                
+                window.location.href = 'instancia.html';
+            } else {
+                alert('Preencha usuário e senha');
+            }
+        });
+
+        // Language toggle functionality
+        const translations = {
+            'pt': {
+                'login-title': 'Acesse sua conta',
+                'login-subtitle': 'Gerencie suas instâncias da API do WhatsApp.',
+                'email-label': 'Usuário',
+                'password-label': 'Senha',
+                'forgot-password': 'Esqueceu a senha?',
+                'login-button': 'Entrar',
+                'register-text': 'Ainda não tem uma conta?',
+                'register-link': 'Criar conta'
+            },
+            'en': {
+                'login-title': 'Access your account',
+                'login-subtitle': 'Manage your WhatsApp API instances.',
+                'email-label': 'Username',
+                'password-label': 'Password',
+                'forgot-password': 'Forgot password?',
+                'login-button': 'Sign In',
+                'register-text': 'Don\'t have an account?',
+                'register-link': 'Create account'
+            },
+            'es': {
+                'login-title': 'Accede a tu cuenta',
+                'login-subtitle': 'Administra tus instancias de la API de WhatsApp.',
+                'email-label': 'Usuario',
+                'password-label': 'Contraseña',
+                'forgot-password': '¿Olvidaste tu contraseña?',
+                'login-button': 'Entrar',
+                'register-text': '¿Aún no tienes una cuenta?',
+                'register-link': 'Crear cuenta'
+            }
+        };
+
+        const languageToggle = document.getElementById('language-toggle');
+        const languageDropdown = document.getElementById('language-dropdown');
+        const currentLangText = document.getElementById('current-lang-text');
+        let currentLanguage = localStorage.getItem('language') || 'pt';
+
+        const languageNames = {
+            'pt': 'Português',
+            'en': 'English',
+            'es': 'Español'
+        };
+
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('language', lang);
+            currentLangText.textContent = languageNames[lang];
+            
+            // Update all translatable elements
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    element.innerHTML = translations[lang][key];
+                }
+            });
+            
+            // Close dropdown
+            languageDropdown.classList.add('hidden');
+        }
+
+        // Toggle dropdown
+        languageToggle.addEventListener('click', () => {
+            languageDropdown.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!languageToggle.contains(e.target) && !languageDropdown.contains(e.target)) {
+                languageDropdown.classList.add('hidden');
+            }
+        });
+
+        // Function to select language (called from dropdown buttons)
+        function selectLanguage(lang) {
+            changeLanguage(lang);
+        }
+
+        // Initialize language
+        changeLanguage(currentLanguage);
+    </script>
+</body>
+
+</html>

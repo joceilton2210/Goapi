@@ -1,0 +1,1861 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    
+    <!-- SEO Meta Tags -->
+    <title>Documentação API - GO API WhatsApp Manager</title>
+    <meta name="description" content="Documentação completa da GO API WhatsApp. Aprenda a integrar, enviar mensagens, gerenciar instâncias e usar webhooks. Exemplos práticos e guias detalhados.">
+    <meta name="keywords" content="WhatsApp API documentação, GO API docs, tutorial WhatsApp API, integração WhatsApp, API mensagens, webhook WhatsApp, exemplos API">
+    <meta name="author" content="Time GO - Nakamura, Joceilton Gomes, Augusto Oliveira, Othon Righetti">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="pt-BR">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="documentacao.html">
+    <meta property="og:title" content="Documentação - GO API WhatsApp">
+    <meta property="og:description" content="Documentação completa da GO API WhatsApp. Aprenda a integrar e usar nossa API de forma profissional.">
+    <meta property="og:image" content="logo.png">
+    <meta property="og:site_name" content="GO API WhatsApp">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="documentacao.html">
+    <meta name="twitter:title" content="Documentação - GO API WhatsApp">
+    <meta name="twitter:description" content="Documentação completa da GO API WhatsApp. Aprenda a integrar e usar nossa API de forma profissional.">
+    <meta name="twitter:image" content="logo.png">
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="logo.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="logo.png">
+    <link rel="shortcut icon" href="logo.png" type="image/x-icon">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    
+    <!-- Tailwind Configuration -->
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#eaa800",
+                        "primary-hover": "#ffffff",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111722",
+                        "surface-dark": "#192233",
+                        "surface-light": "#ffffff",
+                        "border-dark": "#232f48",
+                        "border-light": "#e2e8f0",
+                        "text-secondary-dark": "#92a4c9",
+                        "text-secondary-light": "#64748b",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "mono": ["Fira Code", "monospace"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        code {
+            font-family: 'Fira Code', monospace;
+        }
+
+        /* Scrollbar personalizada */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #192233;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #232f48;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #324467;
+        }
+
+        /* Componente de código estilo macOS */
+        .code-block-macos {
+            background: #1e1e2e;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .code-block-header {
+            background: #2a2a3e;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #3a3a4e;
+        }
+
+        .macos-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .macos-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .macos-btn:hover {
+            opacity: 0.8;
+        }
+
+        .macos-btn-close {
+            background: #ff5f57;
+        }
+
+        .macos-btn-minimize {
+            background: #febc2e;
+        }
+
+        .macos-btn-maximize {
+            background: #28c840;
+        }
+
+        .code-block-title {
+            font-size: 13px;
+            color: #92a4c9;
+            font-weight: 500;
+        }
+
+        .copy-btn {
+            background: #3a3a4e;
+            color: #92a4c9;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .copy-btn:hover {
+            background: #4a4a5e;
+            color: #fff;
+        }
+
+        .copy-btn.copied {
+            background: #28c840;
+            color: #fff;
+        }
+
+        /* Code blocks styling */
+        pre {
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            overflow-x: auto;
+            border: none;
+        }
+
+        pre code {
+            border: none;
+            padding: 0;
+        }
+
+        code {
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+        }
+
+        .code-content {
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .code-content pre {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* Syntax highlighting */
+        .token-keyword {
+            color: #c026d3;
+        }
+
+        .dark .token-keyword {
+            color: #ff79c6;
+        }
+
+        .token-string {
+            color: #16a34a;
+        }
+
+        .dark .token-string {
+            color: #50fa7b;
+        }
+
+        .token-number {
+            color: #9333ea;
+        }
+
+        .dark .token-number {
+            color: #bd93f9;
+        }
+
+        .token-comment {
+            color: #64748b;
+            font-style: italic;
+        }
+
+        .dark .token-comment {
+            color: #6272a4;
+            font-style: italic;
+        }
+
+        .token-function {
+            color: #0891b2;
+        }
+
+        .dark .token-function {
+            color: #8be9fd;
+        }
+
+        .token-property {
+            color: #ea580c;
+        }
+
+        .dark .token-property {
+            color: #f1fa8c;
+        }
+
+        /* Código base - IMPORTANTE: texto escuro no claro, branco no escuro */
+        pre code {
+            color: #1e293b;
+        }
+
+        .dark pre code {
+            color: #f8f8f2;
+        }
+
+        /* Background dos blocos de código */
+        pre {
+            background-color: #f8fafc;
+        }
+
+        .dark pre {
+            background-color: #1e1e1e;
+        }
+    </style>
+
+    <script>
+        function copyCode(button, codeId) {
+            const codeElement = document.getElementById(codeId);
+            const code = codeElement.textContent;
+            
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = button.innerHTML;
+                button.innerHTML = '<span class="material-symbols-outlined" style="font-size: 16px;">check</span> Copiado!';
+                button.classList.add('copied');
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.classList.remove('copied');
+                }, 2000);
+            });
+        }
+    </script>
+</head>
+
+<body
+    class="bg-gray-50 dark:bg-background-dark min-h-screen flex flex-col font-display text-slate-900 dark:text-white transition-colors duration-200">
+    
+    <!-- Top Navigation -->
+    <header
+        class="border-b border-solid border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark sticky top-0 z-50">
+        <div class="flex items-center justify-center py-3 px-4 md:px-10 lg:px-20">
+            <div class="flex items-center justify-between w-full max-w-[1200px]">
+                <div class="flex items-center gap-6 text-slate-900 dark:text-white">
+                    <img src="logo_black.png" alt="GO API Logo" class="h-12 w-auto object-contain dark:hidden">
+                    <img src="logo_white.png" alt="GO API Logo" class="h-12 w-auto object-contain hidden dark:block">
+                    <a href="instancia.html"
+                        class="hidden md:block text-text-secondary-light dark:text-text-secondary-dark hover:text-white transition-colors text-sm font-medium">
+                        Dashboard
+                    </a>
+                    <a href="documentacao.html"
+                        class="hidden md:block text-primary font-semibold text-sm">
+                        Documentação
+                    </a>
+                    <a href="integracao.html"
+                        class="hidden md:block text-text-secondary-light dark:text-text-secondary-dark hover:text-white transition-colors text-sm font-medium">
+                        Integração
+                    </a>
+                    <a href="envio.html"
+                        class="hidden md:block text-primary font-semibold text-sm">
+                        Enviar Mensagens
+                    </a>
+                </div>
+                <div class="flex gap-6 items-center">
+                    <button id="theme-toggle"
+                        class="text-text-secondary-light dark:text-text-secondary-dark hover:text-white transition-colors">
+                        <span class="material-symbols-outlined dark:hidden">light_mode</span>
+                        <span class="material-symbols-outlined hidden dark:inline">dark_mode</span>
+                    </button>
+                    
+                    <!-- Language Dropdown -->
+                    <div class="relative">
+                        <button id="language-toggle"
+                            class="flex items-center gap-2 px-3 py-1.5 text-text-secondary-light dark:text-text-secondary-dark hover:text-white transition-colors text-sm font-semibold rounded-lg hover:bg-surface-dark">
+                            <span class="material-symbols-outlined text-[18px]">language</span>
+                            <span id="current-lang-text">PT</span>
+                            <span class="material-symbols-outlined text-[14px]">expand_more</span>
+                        </button>
+                        
+                        <div id="language-dropdown"
+                            class="hidden absolute top-full right-0 mt-2 w-44 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl overflow-hidden z-50">
+                            <button onclick="selectLanguage('pt')"
+                                class="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left">
+                                <span><img src="bra.png" alt="Bandeira Brasil" class="w-5 h-5 object-cover rounded"></span>
+                                <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Português</span>
+                            </button>
+                            <button onclick="selectLanguage('en')"
+                                class="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left">
+                                <span><img src="usa.png" alt="Bandeira EUA" class="w-5 h-5 object-cover rounded"></span>
+                                <span class="text-sm font-medium text-gray-700 dark:text-gray-200">English</span>
+                            </button>
+                            <button onclick="selectLanguage('es')"
+                                class="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left">
+                                <span><img src="esp.png" alt="Bandeira Espanha" class="w-5 h-5 object-cover rounded"></span>
+                                <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Español</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="h-8 w-[1px] bg-border-light dark:bg-border-dark"></div>
+                    <div class="flex items-center gap-3">
+                        <div class="text-right hidden sm:block">
+                            <p class="text-sm font-semibold">Admin User</p>
+                            <p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Pro Plan</p>
+                        </div>
+                        <div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-primary"
+                            data-alt="User profile picture placeholder"
+                            style='background-image: url("icone.png");'>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="layout-container flex h-full grow flex-col">
+        <div class="flex flex-1 py-8 px-4 md:px-10 lg:px-20">
+            <div class="flex w-full max-w-[1200px] mx-auto gap-8">
+                
+                <!-- Sidebar Navigation -->
+                <aside class="hidden lg:block w-64 flex-shrink-0">
+                    <div class="sticky top-24">
+                        <nav class="flex flex-col gap-2">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-text-secondary-light dark:text-text-secondary-dark mb-2" data-i18n="getting-started">
+                                Começando
+                            </h3>
+                            <a href="#introducao"
+                                class="px-3 py-2 rounded-lg text-sm font-medium text-slate-900 dark:text-white bg-primary/10 border-l-2 border-primary" data-i18n="introduction">
+                                Introdução
+                            </a>
+                            <a href="#autenticacao"
+                                class="px-3 py-2 rounded-lg text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-white hover:bg-surface-dark transition-colors" data-i18n="authentication">
+                                Autenticação
+                            </a>
+                            <a href="#instancias"
+                                class="px-3 py-2 rounded-lg text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-white hover:bg-surface-dark transition-colors" data-i18n="manage-instances">
+                                Gerenciar Instâncias
+                            </a>
+                            
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-text-secondary-light dark:text-text-secondary-dark mb-2 mt-6" data-i18n="endpoints">
+                                Endpoints
+                            </h3>
+                            <a href="#enviar-mensagem"
+                                class="px-3 py-2 rounded-lg text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-white hover:bg-surface-dark transition-colors" data-i18n="send-message">
+                                Enviar Mensagem
+                            </a>
+                            <a href="#enviar-midia"
+                                class="px-3 py-2 rounded-lg text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-white hover:bg-surface-dark transition-colors" data-i18n="send-media">
+                                Enviar Mídia
+                            </a>
+                            <a href="#webhooks"
+                                class="px-3 py-2 rounded-lg text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-white hover:bg-surface-dark transition-colors" data-i18n="webhooks">
+                                Webhooks
+                            </a>
+
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-text-secondary-light dark:text-text-secondary-dark mb-2 mt-6" data-i18n="configuration">
+                                Configuração
+                            </h3>
+                            <a href="#variaveis-ambiente"
+                                class="px-3 py-2 rounded-lg text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-white hover:bg-surface-dark transition-colors" data-i18n="env-vars">
+                                Variáveis de Ambiente
+                            </a>
+                            <a href="#deploy-update"
+                                class="px-3 py-2 rounded-lg text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-white hover:bg-surface-dark transition-colors" data-i18n="deploy-update">
+                                Deploy e Atualização
+                            </a>
+                            
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-text-secondary-light dark:text-text-secondary-dark mb-2 mt-6">
+                                Recursos
+                            </h3>
+                            <a href="#exemplos"
+                                class="px-3 py-2 rounded-lg text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-white hover:bg-surface-dark transition-colors">
+                                Exemplos (8 Linguagens)
+                            </a>
+                            <a href="#erros"
+                                class="px-3 py-2 rounded-lg text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-white hover:bg-surface-dark transition-colors">
+                                Códigos de Erro
+                            </a>
+                            
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-text-secondary-light dark:text-text-secondary-dark mb-2 mt-6">
+                                Integrações
+                            </h3>
+                            <a href="#integracoes"
+                                class="px-3 py-2 rounded-lg text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-white hover:bg-surface-dark transition-colors">
+                                Chatwoot, Typebot, n8n
+                            </a>
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- Main Content -->
+                <main class="flex-1 min-w-0">
+                    <div class="flex flex-col gap-8">
+                        
+                        <!-- Header -->
+                        <div class="flex flex-col gap-3">
+                            <h1
+                                class="text-4xl md:text-5xl font-black leading-tight tracking-[-0.033em] text-slate-900 dark:text-white" data-i18n="api-docs">
+                                Documentação da API
+                            </h1>
+                            <p class="text-text-secondary-light dark:text-text-secondary-dark text-lg font-normal leading-normal max-w-3xl" data-i18n="api-subtitle">
+                                Bem-vindo à documentação oficial da GO API WhatsApp. Aqui você encontrará tudo que precisa para integrar nossa API ao seu sistema.
+                            </p>
+                        </div>
+
+                        <!-- Quick Start Card -->
+                        <div class="bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 rounded-xl p-6">
+                            <div class="flex items-start gap-4">
+                                <div class="bg-primary/20 p-3 rounded-lg">
+                                    <span class="material-symbols-outlined text-primary text-2xl">rocket_launch</span>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2" data-i18n="quick-start">Quick Start</h3>
+                                    <p class="text-sm text-text-secondary-light dark:text-text-secondary-dark mb-4">
+                                        Comece a usar a API em menos de 5 minutos. Siga nosso guia rápido de integração.
+                                    </p>
+                                    <button
+                                        class="bg-primary hover:bg-white hover:text-slate-900 text-slate-900 font-semibold px-4 py-2 rounded-lg transition-all text-sm shadow-lg shadow-primary/20">
+                                        Ver Guia Rápido
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Introdução -->
+                        <section id="introducao" class="scroll-mt-24">
+                            <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-6">
+                                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4" data-i18n="intro-title">Introdução</h2>
+                                <p class="text-text-secondary-light dark:text-text-secondary-dark mb-4">
+                                    A GO API WhatsApp é uma solução completa para integração com o WhatsApp Business. Nossa API permite que você:
+                                </p>
+                                <ul class="list-disc list-inside space-y-2 text-text-secondary-light dark:text-text-secondary-dark mb-6">
+                                    <li>Envie mensagens de texto, imagens, vídeos e documentos</li>
+                                    <li>Gerencie múltiplas instâncias do WhatsApp</li>
+                                    <li>Receba webhooks em tempo real</li>
+                                    <li>Automatize respostas e fluxos de conversação</li>
+                                    <li>Integre com seus sistemas existentes</li>
+                                </ul>
+                                
+                                <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-900/30 rounded-lg p-4">
+                                    <div class="flex gap-3">
+                                        <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 mt-0.5">info</span>
+                                        <div>
+                                            <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-1">Base URL</h4>
+                                            <code class="text-sm text-blue-600 dark:text-blue-400 font-mono">https://api.goapi.com.br/v1</code>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Autenticação -->
+                        <section id="autenticacao" class="scroll-mt-24">
+                            <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-6">
+                                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4" data-i18n="auth-title">Autenticação</h2>
+                                <p class="text-text-secondary-light dark:text-text-secondary-dark mb-4">
+                                    Todas as requisições à API devem incluir um token de autenticação no header. Você pode obter seu token no painel de controle.
+                                </p>
+                                
+                                <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-3" data-i18n="auth-header">Header de Autenticação</h3>
+                                <div class="code-block-macos">
+                                    <div class="code-block-header">
+                                        <div class="macos-buttons">
+                                            <div class="macos-btn macos-btn-close"></div>
+                                            <div class="macos-btn macos-btn-minimize"></div>
+                                            <div class="macos-btn macos-btn-maximize"></div>
+                                        </div>
+                                        <div class="code-block-title">HTTP Header</div>
+                                        <button class="copy-btn" onclick="copyCode(this, 'code-header')">
+                                            <span class="material-symbols-outlined" style="font-size: 16px;">content_copy</span>
+                                            Copiar
+                                        </button>
+                                    </div>
+                                    <div class="code-content">
+                                        <pre id="code-header"><span class="token-property">Authorization</span>: <span class="token-string">Bearer SEU_TOKEN_AQUI</span></pre>
+                                    </div>
+                                </div>
+
+                                <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-3">Exemplo de Requisição</h3>
+                                <div class="code-block-macos">
+                                    <div class="code-block-header">
+                                        <div class="macos-buttons">
+                                            <div class="macos-btn macos-btn-close"></div>
+                                            <div class="macos-btn macos-btn-minimize"></div>
+                                            <div class="macos-btn macos-btn-maximize"></div>
+                                        </div>
+                                        <div class="code-block-title">curl</div>
+                                        <button class="copy-btn" onclick="copyCode(this, 'code-auth')">
+                                            <span class="material-symbols-outlined" style="font-size: 16px;">content_copy</span>
+                                            Copiar
+                                        </button>
+                                    </div>
+                                    <div class="code-content">
+<pre id="code-auth"><span class="token-function">curl</span> <span class="token-keyword">-X</span> POST https://api.goapi.com.br/v1/messages/send <span class="token-keyword">\</span>
+  <span class="token-keyword">-H</span> <span class="token-string">"Authorization: Bearer SEU_TOKEN_AQUI"</span> <span class="token-keyword">\</span>
+  <span class="token-keyword">-H</span> <span class="token-string">"Content-Type: application/json"</span> <span class="token-keyword">\</span>
+  <span class="token-keyword">-d</span> <span class="token-string">'{
+    "instance_id": "inst_123",
+    "number": "5511999999999",
+    "message": "Olá, mundo!"
+  }'</span></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Gerenciar Instâncias -->
+                        <section id="instancias" class="scroll-mt-24">
+                            <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-6">
+                                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-6" data-i18n="instances-title">Gerenciar Instâncias</h2>
+
+                                <!-- Criar Instância -->
+                                <div class="mb-10">
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <span class="bg-green-500/10 text-green-500 text-xs font-bold px-2 py-1 rounded">POST</span>
+                                        <h3 class="text-lg font-bold text-slate-900 dark:text-white" data-i18n="create-instance">Criar Instância</h3>
+                                    </div>
+                                    <p class="text-text-secondary-light dark:text-text-secondary-dark mb-4">cria uma nova sessão do WhatsApp.</p>
+                                    
+                                    <div class="code-block-macos mb-4">
+                                        <div class="code-block-header">
+                                            <div class="code-block-title">Endpoint</div>
+                                            <button class="copy-btn" onclick="copyCode(this, 'code-create-inst')"><span class="material-symbols-outlined" style="font-size: 16px;">content_copy</span>Copiar</button>
+                                        </div>
+                                        <div class="code-content"><pre id="code-create-inst"><span class="token-keyword">POST</span> <span class="token-string">/v1/instances</span></pre></div>
+                                    </div>
+
+                                    <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-2" data-i18n="json-body">Body (JSON)</h4>
+                                    <div class="code-block-macos">
+                                        <div class="code-content"><pre>{ <span class="token-property">"instanceId"</span>: <span class="token-string">"minha_empresa_01"</span> }</pre></div>
+                                    </div>
+                                </div>
+
+                                <!-- Status Instância -->
+                                <div class="mb-10">
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <span class="bg-blue-500/10 text-blue-500 text-xs font-bold px-2 py-1 rounded">GET</span>
+                                        <h3 class="text-lg font-bold text-slate-900 dark:text-white" data-i18n="instance-status">Status da Instância</h3>
+                                    </div>
+                                    <p class="text-text-secondary-light dark:text-text-secondary-dark mb-4">Verifica se a instância está conectada.</p>
+                                    
+                                    <div class="code-block-macos">
+                                        <div class="code-content"><pre><span class="token-keyword">GET</span> <span class="token-string">/v1/instances/:instanceId/status</span></pre></div>
+                                    </div>
+                                </div>
+
+                                <!-- Obter QR Code -->
+                                <div class="mb-10">
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <span class="bg-blue-500/10 text-blue-500 text-xs font-bold px-2 py-1 rounded">GET</span>
+                                        <h3 class="text-lg font-bold text-slate-900 dark:text-white" data-i18n="get-qr">Obter QR Code</h3>
+                                    </div>
+                                    <p class="text-text-secondary-light dark:text-text-secondary-dark mb-4">Retorna o QR Code em base64 para conexão.</p>
+                                    
+                                    <div class="code-block-macos">
+                                        <div class="code-content"><pre><span class="token-keyword">GET</span> <span class="token-string">/v1/instances/:instanceId/qr</span></pre></div>
+                                    </div>
+                                </div>
+
+                                <!-- Deletar Instância -->
+                                <div>
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <span class="bg-red-500/10 text-red-500 text-xs font-bold px-2 py-1 rounded">DELETE</span>
+                                        <h3 class="text-lg font-bold text-slate-900 dark:text-white" data-i18n="delete-instance">Deletar Instância</h3>
+                                    </div>
+                                    <p class="text-text-secondary-light dark:text-text-secondary-dark mb-4">Remove a sessão e desconecta o WhatsApp.</p>
+                                    
+                                    <div class="code-block-macos">
+                                        <div class="code-content"><pre><span class="token-keyword">DELETE</span> <span class="token-string">/v1/instances/:instanceId</span></pre></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Enviar Mensagem -->
+                        <section id="enviar-mensagem" class="scroll-mt-24">
+                            <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-6">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="bg-green-500/10 text-green-500 text-xs font-bold px-2 py-1 rounded">POST</span>
+                                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white" data-i18n="send-msg-title">Enviar Mensagem de Texto</h2>
+                                </div>
+                                
+                                <p class="text-text-secondary-light dark:text-text-secondary-dark mb-4">
+                                    Endpoint para enviar mensagens de texto simples.
+                                </p>
+
+                                <div class="code-block-macos">
+                                    <div class="code-block-header">
+                                        <div class="macos-buttons">
+                                            <div class="macos-btn macos-btn-close"></div>
+                                            <div class="macos-btn macos-btn-minimize"></div>
+                                            <div class="macos-btn macos-btn-maximize"></div>
+                                        </div>
+                                        <div class="code-block-title">Endpoint</div>
+                                        <button class="copy-btn" onclick="copyCode(this, 'code-endpoint')">
+                                            <span class="material-symbols-outlined" style="font-size: 16px;">content_copy</span>
+                                            Copiar
+                                        </button>
+                                    </div>
+                                    <div class="code-content">
+                                        <pre id="code-endpoint"><span class="token-keyword">POST</span> <span class="token-string">/v1/messages/send</span></pre>
+                                    </div>
+                                </div>
+
+                                <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-3" data-i18n="parameters">Parâmetros</h3>
+                                <div class="overflow-x-auto mb-4">
+                                    <table class="w-full text-sm">
+                                        <thead class="bg-slate-100 dark:bg-slate-800">
+                                            <tr>
+                                                <th class="text-left p-3 font-semibold text-slate-900 dark:text-white">Parâmetro</th>
+                                                <th class="text-left p-3 font-semibold text-slate-900 dark:text-white">Tipo</th>
+                                                <th class="text-left p-3 font-semibold text-slate-900 dark:text-white">Obrigatório</th>
+                                                <th class="text-left p-3 font-semibold text-slate-900 dark:text-white">Descrição</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-border-light dark:divide-border-dark">
+                                            <tr>
+                                                <td class="p-3"><code class="text-primary font-mono">instance_id</code></td>
+                                                <td class="p-3 text-text-secondary-light dark:text-text-secondary-dark">string</td>
+                                                <td class="p-3"><span class="text-green-500">Sim</span></td>
+                                                <td class="p-3 text-text-secondary-light dark:text-text-secondary-dark">ID da instância</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="p-3"><code class="text-primary font-mono">number</code></td>
+                                                <td class="p-3 text-text-secondary-light dark:text-text-secondary-dark">string</td>
+                                                <td class="p-3"><span class="text-green-500">Sim</span></td>
+                                                <td class="p-3 text-text-secondary-light dark:text-text-secondary-dark">Número com DDI (ex: 5511999999999)</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="p-3"><code class="text-primary font-mono">message</code></td>
+                                                <td class="p-3 text-text-secondary-light dark:text-text-secondary-dark">string</td>
+                                                <td class="p-3"><span class="text-green-500">Sim</span></td>
+                                                <td class="p-3 text-text-secondary-light dark:text-text-secondary-dark">Texto da mensagem</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-3">Exemplo de Resposta</h3>
+                                <div class="code-block-macos">
+                                    <div class="code-block-header">
+                                        <div class="macos-buttons">
+                                            <div class="macos-btn macos-btn-close"></div>
+                                            <div class="macos-btn macos-btn-minimize"></div>
+                                            <div class="macos-btn macos-btn-maximize"></div>
+                                        </div>
+                                        <div class="code-block-title">JSON Response</div>
+                                        <button class="copy-btn" onclick="copyCode(this, 'code-response')">
+                                            <span class="material-symbols-outlined" style="font-size: 16px;">content_copy</span>
+                                            Copiar
+                                        </button>
+                                    </div>
+                                    <div class="code-content">
+<pre id="code-response">{
+  <span class="token-property">"success"</span>: <span class="token-keyword">true</span>,
+  <span class="token-property">"message_id"</span>: <span class="token-string">"msg_abc123"</span>,
+  <span class="token-property">"status"</span>: <span class="token-string">"sent"</span>,
+  <span class="token-property">"timestamp"</span>: <span class="token-string">"2024-01-15T10:30:00Z"</span>
+}</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Webhooks -->
+                        <section id="webhooks" class="scroll-mt-24">
+                            <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-6">
+                                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4" data-i18n="webhooks-title">Webhooks</h2>
+                                <p class="text-text-secondary-light dark:text-text-secondary-dark mb-4">
+                                    Configure webhooks para receber notificações em tempo real sobre mensagens recebidas, status de envio e eventos da instância.
+                                </p>
+
+                                <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-900/30 rounded-lg p-4 mb-4">
+                                    <div class="flex gap-3">
+                                        <span class="material-symbols-outlined text-yellow-600 dark:text-yellow-400 mt-0.5">warning</span>
+                                        <div>
+                                            <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-1">Importante</h4>
+                                            <p class="text-sm text-text-secondary-light dark:text-text-secondary-dark">
+                                                Seu endpoint de webhook deve responder com status 200 em até 5 segundos.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-3">Exemplo de Payload</h3>
+                                <div class="code-block-macos">
+                                    <div class="code-block-header">
+                                        <div class="macos-buttons">
+                                            <div class="macos-btn macos-btn-close"></div>
+                                            <div class="macos-btn macos-btn-minimize"></div>
+                                            <div class="macos-btn macos-btn-maximize"></div>
+                                        </div>
+                                        <div class="code-block-title">Webhook Payload</div>
+                                        <button class="copy-btn" onclick="copyCode(this, 'code-webhook')">
+                                            <span class="material-symbols-outlined" style="font-size: 16px;">content_copy</span>
+                                            Copiar
+                                        </button>
+                                    </div>
+                                    <div class="code-content">
+<pre id="code-webhook">{
+  <span class="token-property">"event"</span>: <span class="token-string">"message.received"</span>,
+  <span class="token-property">"instance_id"</span>: <span class="token-string">"inst_123"</span>,
+  <span class="token-property">"data"</span>: {
+    <span class="token-property">"from"</span>: <span class="token-string">"5511999999999"</span>,
+    <span class="token-property">"message"</span>: <span class="token-string">"Olá!"</span>,
+    <span class="token-property">"timestamp"</span>: <span class="token-string">"2024-01-15T10:30:00Z"</span>,
+    <span class="token-property">"message_id"</span>: <span class="token-string">"msg_xyz789"</span>
+  }
+}</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Variáveis de Ambiente -->
+                        <section id="variaveis-ambiente" class="scroll-mt-24">
+                            <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-6">
+                                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4" data-i18n="env-vars-title">Variáveis de Ambiente</h2>
+                                <p class="text-text-secondary-light dark:text-text-secondary-dark mb-4">
+                                    Configurações essenciais para o funcionamento da API. Defina estas variáveis no seu arquivo <code class="text-primary font-mono">.env</code>.
+                                </p>
+
+                                <div class="overflow-x-auto mb-4">
+                                    <table class="w-full text-sm">
+                                        <thead class="bg-slate-100 dark:bg-slate-800">
+                                            <tr>
+                                                <th class="text-left p-3 font-semibold text-slate-900 dark:text-white">Variável</th>
+                                                <th class="text-left p-3 font-semibold text-slate-900 dark:text-white">Descrição</th>
+                                                <th class="text-left p-3 font-semibold text-slate-900 dark:text-white">Padrão</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-border-light dark:divide-border-dark">
+                                            <tr>
+                                                <td class="p-3"><code class="text-primary font-mono">PORT</code></td>
+                                                <td class="p-3 text-text-secondary-light dark:text-text-secondary-dark">Porta do servidor</td>
+                                                <td class="p-3 font-mono">4000</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="p-3"><code class="text-primary font-mono">API_KEY</code></td>
+                                                <td class="p-3 text-text-secondary-light dark:text-text-secondary-dark">Chave Mestra de Autenticação</td>
+                                                <td class="p-3 font-mono">change-this-key</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="p-3"><code class="text-primary font-mono">WEBHOOK_GLOBAL_URL</code></td>
+                                                <td class="p-3 text-text-secondary-light dark:text-text-secondary-dark">URL para receber todos os eventos (opcional)</td>
+                                                <td class="p-3 font-mono">-</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Deploy e Atualização -->
+                        <section id="deploy-update" class="scroll-mt-24">
+                            <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-6">
+                                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-6" data-i18n="deploy-update-title">Guias de Deploy e Atualização</h2>
+
+                                <!-- Docker -->
+                                <div class="mb-8">
+                                    <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                                        <span class="bg-blue-500/10 text-blue-600 dark:text-blue-400 p-1.5 rounded-lg"><span class="material-symbols-outlined text-[20px]">dock_to_bottom</span></span>
+                                        Docker Compose (Recomendado)
+                                    </h3>
+                                    <p class="text-text-secondary-light dark:text-text-secondary-dark mb-3">Para instalar ou atualizar usando Docker Compose:</p>
+                                    <div class="code-block-macos mb-4">
+                                        <div class="code-block-header">
+                                            <div class="macos-buttons">
+                                                <div class="macos-btn macos-btn-close"></div><div class="macos-btn macos-btn-minimize"></div><div class="macos-btn macos-btn-maximize"></div>
+                                            </div>
+                                            <div class="code-block-title">Terminal</div>
+                                            <button class="copy-btn" onclick="copyCode(this, 'code-docker-up')"><span class="material-symbols-outlined" style="font-size: 16px;">content_copy</span>Copiar</button>
+                                        </div>
+                                        <div class="code-content">
+<pre id="code-docker-up"><span class="token-comment"># Baixar atualizações (se estiver usando imagem remota) ou reconstruir</span>
+docker-compose down
+docker-compose build --no-cache
+docker-compose up -d</pre>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Portainer -->
+                                <div class="mb-8">
+                                    <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                                        <span class="bg-sky-500/10 text-sky-600 dark:text-sky-400 p-1.5 rounded-lg"><span class="material-symbols-outlined text-[20px]">deployed_code</span></span>
+                                        Portainer
+                                    </h3>
+                                    <ol class="list-decimal list-inside space-y-2 text-text-secondary-light dark:text-text-secondary-dark">
+                                        <li>Acesse seu painel Portainer.</li>
+                                        <li>Vá para <strong>Containers</strong> e encontre o container da API.</li>
+                                        <li>Clique no nome do container.</li>
+                                        <li>No topo, clique em <strong>Recreate</strong>.</li>
+                                        <li>Ative a opção <strong>"Pull latest image"</strong>.</li>
+                                        <li>Clique em <strong>Recreate</strong>.</li>
+                                        <li class="pl-5 text-sm italic text-gray-500">Isso irá baixar a nova versão e reiniciar o serviço mantendo os volumes.</li>
+                                    </ol>
+                                </div>
+
+                                <!-- NPM -->
+                                <div>
+                                    <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                                        <span class="bg-red-500/10 text-red-600 dark:text-red-400 p-1.5 rounded-lg"><span class="material-symbols-outlined text-[20px]">terminal</span></span>
+                                        Manual (NPM)
+                                    </h3>
+                                    <div class="code-block-macos">
+                                        <div class="code-block-header">
+                                            <div class="macos-buttons">
+                                                <div class="macos-btn macos-btn-close"></div><div class="macos-btn macos-btn-minimize"></div><div class="macos-btn macos-btn-maximize"></div>
+                                            </div>
+                                            <div class="code-block-title">Terminal</div>
+                                            <button class="copy-btn" onclick="copyCode(this, 'code-npm-update')"><span class="material-symbols-outlined" style="font-size: 16px;">content_copy</span>Copiar</button>
+                                        </div>
+                                        <div class="code-content">
+<pre id="code-npm-update"><span class="token-comment"># Parar o serviço atual (ex: CTRL+C)</span>
+
+<span class="token-comment"># Baixar código novo (se usar git)</span>
+git pull origin main
+
+<span class="token-comment"># Atualizar dependências</span>
+npm install
+
+<span class="token-comment"># Iniciar servidor</span>
+npm start</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Exemplos de Código -->
+                        <section id="exemplos" class="scroll-mt-24">
+                            <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-6">
+                                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4" data-i18n="code-examples">Exemplos de Código</h2>
+                                <p class="text-text-secondary-light dark:text-text-secondary-dark mb-6">
+                                    Veja como integrar a GO API WhatsApp em diferentes linguagens de programação.
+                                </p>
+
+                                <!-- JavaScript -->
+                                <div class="mb-6">
+                                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                                        <span class="bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 px-2 py-1 rounded text-sm font-mono">JavaScript</span>
+                                    </h3>
+                                    <div class="code-block-macos">
+                                        <div class="code-block-header">
+                                            <div class="macos-buttons">
+                                                <div class="macos-btn macos-btn-close"></div>
+                                                <div class="macos-btn macos-btn-minimize"></div>
+                                                <div class="macos-btn macos-btn-maximize"></div>
+                                            </div>
+                                            <div class="code-block-title">example.js</div>
+                                            <button class="copy-btn" onclick="copyCode(this, 'code-js')">
+                                                <span class="material-symbols-outlined" style="font-size: 16px;">content_copy</span>
+                                                Copiar
+                                            </button>
+                                        </div>
+                                        <div class="code-content">
+<pre id="code-js"><span class="token-keyword">const</span> <span class="token-function">sendMessage</span> = <span class="token-keyword">async</span> () => {
+  <span class="token-keyword">const</span> response = <span class="token-keyword">await</span> <span class="token-function">fetch</span>(<span class="token-string">'https://api.goapi.com.br/v1/messages/send'</span>, {
+    <span class="token-property">method</span>: <span class="token-string">'POST'</span>,
+    <span class="token-property">headers</span>: {
+      <span class="token-string">'Authorization'</span>: <span class="token-string">'Bearer SEU_TOKEN'</span>,
+      <span class="token-string">'Content-Type'</span>: <span class="token-string">'application/json'</span>
+    },
+    <span class="token-property">body</span>: <span class="token-function">JSON.stringify</span>({
+      <span class="token-property">instance_id</span>: <span class="token-string">'inst_123'</span>,
+      <span class="token-property">number</span>: <span class="token-string">'5511999999999'</span>,
+      <span class="token-property">message</span>: <span class="token-string">'Olá do JavaScript!'</span>
+    })
+  });
+  <span class="token-keyword">return</span> <span class="token-keyword">await</span> response.<span class="token-function">json</span>();
+};</pre>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Python -->
+                                <div class="mb-6">
+                                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                                        <span class="bg-blue-500/10 text-blue-600 dark:text-blue-400 px-2 py-1 rounded text-sm font-mono">Python</span>
+                                    </h3>
+                                    <div class="code-block-macos">
+                                        <div class="code-block-header">
+                                            <div class="macos-buttons">
+                                                <div class="macos-btn macos-btn-close"></div>
+                                                <div class="macos-btn macos-btn-minimize"></div>
+                                                <div class="macos-btn macos-btn-maximize"></div>
+                                            </div>
+                                            <div class="code-block-title">example.py</div>
+                                            <button class="copy-btn" onclick="copyCode(this, 'code-python')">
+                                                <span class="material-symbols-outlined" style="font-size: 16px;">content_copy</span>
+                                                Copiar
+                                            </button>
+                                        </div>
+                                        <div class="code-content">
+<pre id="code-python"><span class="token-keyword">import</span> requests
+
+<span class="token-keyword">def</span> <span class="token-function">send_message</span>():
+    url = <span class="token-string">"https://api.goapi.com.br/v1/messages/send"</span>
+    headers = {
+        <span class="token-string">"Authorization"</span>: <span class="token-string">"Bearer SEU_TOKEN"</span>,
+        <span class="token-string">"Content-Type"</span>: <span class="token-string">"application/json"</span>
+    }
+    data = {
+        <span class="token-string">"instance_id"</span>: <span class="token-string">"inst_123"</span>,
+        <span class="token-string">"number"</span>: <span class="token-string">"5511999999999"</span>,
+        <span class="token-string">"message"</span>: <span class="token-string">"Olá do Python!"</span>
+    }
+    response = requests.<span class="token-function">post</span>(url, json=data, headers=headers)
+    <span class="token-keyword">return</span> response.<span class="token-function">json</span>()</pre>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- PHP -->
+                                <div class="mb-6">
+                                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                                        <span class="bg-purple-500/10 text-purple-600 dark:text-purple-400 px-2 py-1 rounded text-sm font-mono">PHP</span>
+                                    </h3>
+                                    <div class="code-block-macos">
+                                        <div class="code-block-header">
+                                            <div class="macos-buttons">
+                                                <div class="macos-btn macos-btn-close"></div>
+                                                <div class="macos-btn macos-btn-minimize"></div>
+                                                <div class="macos-btn macos-btn-maximize"></div>
+                                            </div>
+                                            <div class="code-block-title">example.php</div>
+                                            <button class="copy-btn" onclick="copyCode(this, 'code-php')">
+                                                <span class="material-symbols-outlined" style="font-size: 16px;">content_copy</span>
+                                                Copiar
+                                            </button>
+                                        </div>
+                                        <div class="code-content">
+<pre id="code-php"><span class="token-keyword">&lt;?php</span>
+<span class="token-keyword">function</span> <span class="token-function">sendMessage</span>() {
+    $url = <span class="token-string">"https://api.goapi.com.br/v1/messages/send"</span>;
+    $data = <span class="token-function">json_encode</span>([
+        <span class="token-string">"instance_id"</span> => <span class="token-string">"inst_123"</span>,
+        <span class="token-string">"number"</span> => <span class="token-string">"5511999999999"</span>,
+        <span class="token-string">"message"</span> => <span class="token-string">"Olá do PHP!"</span>
+    ]);
+    
+    $ch = <span class="token-function">curl_init</span>($url);
+    <span class="token-function">curl_setopt</span>($ch, CURLOPT_CUSTOMREQUEST, <span class="token-string">"POST"</span>);
+    <span class="token-function">curl_setopt</span>($ch, CURLOPT_POSTFIELDS, $data);
+    <span class="token-function">curl_setopt</span>($ch, CURLOPT_RETURNTRANSFER, <span class="token-keyword">true</span>);
+    <span class="token-function">curl_setopt</span>($ch, CURLOPT_HTTPHEADER, [
+        <span class="token-string">"Authorization: Bearer SEU_TOKEN"</span>,
+        <span class="token-string">"Content-Type: application/json"</span>
+    ]);
+    
+    $result = <span class="token-function">curl_exec</span>($ch);
+    <span class="token-function">curl_close</span>($ch);
+    <span class="token-keyword">return</span> <span class="token-function">json_decode</span>($result);
+}</pre>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Java -->
+                                <div class="mb-6">
+                                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                                        <span class="bg-red-500/10 text-red-600 dark:text-red-400 px-2 py-1 rounded text-sm font-mono">Java</span>
+                                    </h3>
+                                    <div class="code-block-macos">
+                                        <div class="code-block-header">
+                                            <div class="macos-buttons">
+                                                <div class="macos-btn macos-btn-close"></div>
+                                                <div class="macos-btn macos-btn-minimize"></div>
+                                                <div class="macos-btn macos-btn-maximize"></div>
+                                            </div>
+                                            <div class="code-block-title">Example.java</div>
+                                            <button class="copy-btn" onclick="copyCode(this, 'code-java')">
+                                                <span class="material-symbols-outlined" style="font-size: 16px;">content_copy</span>
+                                                Copiar
+                                            </button>
+                                        </div>
+                                        <div class="code-content">
+<pre id="code-java"><span class="token-keyword">import</span> java.net.http.*;
+<span class="token-keyword">import</span> java.net.URI;
+
+<span class="token-keyword">public class</span> <span class="token-function">Example</span> {
+    <span class="token-keyword">public static void</span> <span class="token-function">sendMessage</span>() <span class="token-keyword">throws</span> Exception {
+        String json = <span class="token-string">"{\"instance_id\":\"inst_123\",\"number\":\"5511999999999\",\"message\":\"Olá do Java!\"}"</span>;
+        
+        HttpClient client = HttpClient.<span class="token-function">newHttpClient</span>();
+        HttpRequest request = HttpRequest.<span class="token-function">newBuilder</span>()
+            .<span class="token-function">uri</span>(URI.<span class="token-function">create</span>(<span class="token-string">"https://api.goapi.com.br/v1/messages/send"</span>))
+            .<span class="token-function">header</span>(<span class="token-string">"Authorization"</span>, <span class="token-string">"Bearer SEU_TOKEN"</span>)
+            .<span class="token-function">header</span>(<span class="token-string">"Content-Type"</span>, <span class="token-string">"application/json"</span>)
+            .<span class="token-function">POST</span>(HttpRequest.BodyPublishers.<span class="token-function">ofString</span>(json))
+            .<span class="token-function">build</span>();
+        
+        HttpResponse&lt;String&gt; response = client.<span class="token-function">send</span>(request, HttpResponse.BodyHandlers.<span class="token-function">ofString</span>());
+        System.out.<span class="token-function">println</span>(response.<span class="token-function">body</span>());
+    }
+}</pre>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- C# -->
+                                <div class="mb-6">
+                                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                                        <span class="bg-green-500/10 text-green-600 dark:text-green-400 px-2 py-1 rounded text-sm font-mono">C#</span>
+                                    </h3>
+                                    <div class="code-block-macos">
+                                        <div class="code-block-header">
+                                            <div class="macos-buttons">
+                                                <div class="macos-btn macos-btn-close"></div>
+                                                <div class="macos-btn macos-btn-minimize"></div>
+                                                <div class="macos-btn macos-btn-maximize"></div>
+                                            </div>
+                                            <div class="code-block-title">Example.cs</div>
+                                            <button class="copy-btn" onclick="copyCode(this, 'code-csharp')">
+                                                <span class="material-symbols-outlined" style="font-size: 16px;">content_copy</span>
+                                                Copiar
+                                            </button>
+                                        </div>
+                                        <div class="code-content">
+<pre id="code-csharp"><span class="token-keyword">using</span> System.Net.Http;
+<span class="token-keyword">using</span> System.Text;
+
+<span class="token-keyword">public class</span> <span class="token-function">Example</span> {
+    <span class="token-keyword">public static async</span> Task <span class="token-function">SendMessage</span>() {
+        <span class="token-keyword">var</span> client = <span class="token-keyword">new</span> <span class="token-function">HttpClient</span>();
+        client.DefaultRequestHeaders.<span class="token-function">Add</span>(<span class="token-string">"Authorization"</span>, <span class="token-string">"Bearer SEU_TOKEN"</span>);
+        
+        <span class="token-keyword">var</span> json = <span class="token-string">"{\"instance_id\":\"inst_123\",\"number\":\"5511999999999\",\"message\":\"Olá do C#!\"}"</span>;
+        <span class="token-keyword">var</span> content = <span class="token-keyword">new</span> <span class="token-function">StringContent</span>(json, Encoding.UTF8, <span class="token-string">"application/json"</span>);
+        
+        <span class="token-keyword">var</span> response = <span class="token-keyword">await</span> client.<span class="token-function">PostAsync</span>(
+            <span class="token-string">"https://api.goapi.com.br/v1/messages/send"</span>, 
+            content
+        );
+        
+        <span class="token-keyword">var</span> result = <span class="token-keyword">await</span> response.Content.<span class="token-function">ReadAsStringAsync</span>();
+        Console.<span class="token-function">WriteLine</span>(result);
+    }
+}</pre>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Ruby -->
+                                <div class="mb-6">
+                                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                                        <span class="bg-red-700/10 text-red-700 dark:text-red-300 px-2 py-1 rounded text-sm font-mono">Ruby</span>
+                                    </h3>
+                                    <div class="code-block-macos">
+                                        <div class="code-block-header">
+                                            <div class="macos-buttons">
+                                                <div class="macos-btn macos-btn-close"></div>
+                                                <div class="macos-btn macos-btn-minimize"></div>
+                                                <div class="macos-btn macos-btn-maximize"></div>
+                                            </div>
+                                            <div class="code-block-title">example.rb</div>
+                                            <button class="copy-btn" onclick="copyCode(this, 'code-ruby')">
+                                                <span class="material-symbols-outlined" style="font-size: 16px;">content_copy</span>
+                                                Copiar
+                                            </button>
+                                        </div>
+                                        <div class="code-content">
+<pre id="code-ruby"><span class="token-keyword">require</span> <span class="token-string">'net/http'</span>
+<span class="token-keyword">require</span> <span class="token-string">'json'</span>
+
+<span class="token-keyword">def</span> <span class="token-function">send_message</span>
+  uri = URI(<span class="token-string">'https://api.goapi.com.br/v1/messages/send'</span>)
+  
+  http = Net::HTTP.<span class="token-function">new</span>(uri.host, uri.port)
+  http.use_ssl = <span class="token-keyword">true</span>
+  
+  request = Net::HTTP::Post.<span class="token-function">new</span>(uri.path)
+  request[<span class="token-string">'Authorization'</span>] = <span class="token-string">'Bearer SEU_TOKEN'</span>
+  request[<span class="token-string">'Content-Type'</span>] = <span class="token-string">'application/json'</span>
+  request.body = {
+    <span class="token-property">instance_id</span>: <span class="token-string">'inst_123'</span>,
+    <span class="token-property">number</span>: <span class="token-string">'5511999999999'</span>,
+    <span class="token-property">message</span>: <span class="token-string">'Olá do Ruby!'</span>
+  }.<span class="token-function">to_json</span>
+  
+  response = http.<span class="token-function">request</span>(request)
+  JSON.<span class="token-function">parse</span>(response.body)
+<span class="token-keyword">end</span></pre>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Go -->
+                                <div class="mb-6">
+                                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                                        <span class="bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 px-2 py-1 rounded text-sm font-mono">Go</span>
+                                    </h3>
+                                    <div class="code-block-macos">
+                                        <div class="code-block-header">
+                                            <div class="macos-buttons">
+                                                <div class="macos-btn macos-btn-close"></div>
+                                                <div class="macos-btn macos-btn-minimize"></div>
+                                                <div class="macos-btn macos-btn-maximize"></div>
+                                            </div>
+                                            <div class="code-block-title">example.go</div>
+                                            <button class="copy-btn" onclick="copyCode(this, 'code-go')">
+                                                <span class="material-symbols-outlined" style="font-size: 16px;">content_copy</span>
+                                                Copiar
+                                            </button>
+                                        </div>
+                                        <div class="code-content">
+<pre id="code-go"><span class="token-keyword">package</span> main
+
+<span class="token-keyword">import</span> (
+    <span class="token-string">"bytes"</span>
+    <span class="token-string">"encoding/json"</span>
+    <span class="token-string">"net/http"</span>
+)
+
+<span class="token-keyword">func</span> <span class="token-function">sendMessage</span>() <span class="token-keyword">error</span> {
+    data := <span class="token-function">map</span>[<span class="token-keyword">string</span>]<span class="token-keyword">string</span>{
+        <span class="token-string">"instance_id"</span>: <span class="token-string">"inst_123"</span>,
+        <span class="token-string">"number"</span>:      <span class="token-string">"5511999999999"</span>,
+        <span class="token-string">"message"</span>:     <span class="token-string">"Olá do Go!"</span>,
+    }
+    
+    jsonData, _ := json.<span class="token-function">Marshal</span>(data)
+    req, _ := http.<span class="token-function">NewRequest</span>(<span class="token-string">"POST"</span>, 
+        <span class="token-string">"https://api.goapi.com.br/v1/messages/send"</span>, 
+        bytes.<span class="token-function">NewBuffer</span>(jsonData))
+    
+    req.Header.<span class="token-function">Set</span>(<span class="token-string">"Authorization"</span>, <span class="token-string">"Bearer SEU_TOKEN"</span>)
+    req.Header.<span class="token-function">Set</span>(<span class="token-string">"Content-Type"</span>, <span class="token-string">"application/json"</span>)
+    
+    client := &http.Client{}
+    resp, err := client.<span class="token-function">Do</span>(req)
+    <span class="token-keyword">return</span> err
+}</pre>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Rust -->
+                                <div class="mb-6">
+                                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                                        <span class="bg-orange-500/10 text-orange-600 dark:text-orange-400 px-2 py-1 rounded text-sm font-mono">Rust</span>
+                                    </h3>
+                                    <div class="code-block-macos">
+                                        <div class="code-block-header">
+                                            <div class="macos-buttons">
+                                                <div class="macos-btn macos-btn-close"></div>
+                                                <div class="macos-btn macos-btn-minimize"></div>
+                                                <div class="macos-btn macos-btn-maximize"></div>
+                                            </div>
+                                            <div class="code-block-title">example.rs</div>
+                                            <button class="copy-btn" onclick="copyCode(this, 'code-rust')">
+                                                <span class="material-symbols-outlined" style="font-size: 16px;">content_copy</span>
+                                                Copiar
+                                            </button>
+                                        </div>
+                                        <div class="code-content">
+<pre id="code-rust"><span class="token-keyword">use</span> reqwest;
+<span class="token-keyword">use</span> serde_json::json;
+
+<span class="token-keyword">async fn</span> <span class="token-function">send_message</span>() -> Result&lt;(), Box&lt;<span class="token-keyword">dyn</span> std::error::Error&gt;&gt; {
+    <span class="token-keyword">let</span> client = reqwest::Client::<span class="token-function">new</span>();
+    
+    <span class="token-keyword">let</span> body = <span class="token-function">json</span>!({
+        <span class="token-string">"instance_id"</span>: <span class="token-string">"inst_123"</span>,
+        <span class="token-string">"number"</span>: <span class="token-string">"5511999999999"</span>,
+        <span class="token-string">"message"</span>: <span class="token-string">"Olá do Rust!"</span>
+    });
+    
+    <span class="token-keyword">let</span> response = client
+        .<span class="token-function">post</span>(<span class="token-string">"https://api.goapi.com.br/v1/messages/send"</span>)
+        .<span class="token-function">header</span>(<span class="token-string">"Authorization"</span>, <span class="token-string">"Bearer SEU_TOKEN"</span>)
+        .<span class="token-function">header</span>(<span class="token-string">"Content-Type"</span>, <span class="token-string">"application/json"</span>)
+        .<span class="token-function">json</span>(&body)
+        .<span class="token-function">send</span>()
+        .<span class="token-keyword">await</span>?;
+    
+    <span class="token-keyword">let</span> result = response.<span class="token-function">text</span>().<span class="token-keyword">await</span>?;
+    <span class="token-function">println!</span>(<span class="token-string">"{}"</span>, result);
+    Ok(())
+}</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Códigos de Erro -->
+                        <section id="erros" class="scroll-mt-24">
+                            <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-6">
+                                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4" data-i18n="error-codes">Códigos de Erro</h2>
+                                <p class="text-text-secondary-light dark:text-text-secondary-dark mb-4">
+                                    A API utiliza códigos de status HTTP padrão para indicar sucesso ou falha das requisições.
+                                </p>
+
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-sm">
+                                        <thead class="bg-slate-100 dark:bg-slate-800">
+                                            <tr>
+                                                <th class="text-left p-3 font-semibold text-slate-900 dark:text-white">Código</th>
+                                                <th class="text-left p-3 font-semibold text-slate-900 dark:text-white">Descrição</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-border-light dark:divide-border-dark">
+                                            <tr>
+                                                <td class="p-3"><code class="text-green-500 font-mono">200</code></td>
+                                                <td class="p-3 text-text-secondary-light dark:text-text-secondary-dark">Requisição bem-sucedida</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="p-3"><code class="text-yellow-500 font-mono">400</code></td>
+                                                <td class="p-3 text-text-secondary-light dark:text-text-secondary-dark">Requisição inválida (parâmetros incorretos)</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="p-3"><code class="text-red-500 font-mono">401</code></td>
+                                                <td class="p-3 text-text-secondary-light dark:text-text-secondary-dark">Não autorizado (token inválido)</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="p-3"><code class="text-red-500 font-mono">404</code></td>
+                                                <td class="p-3 text-text-secondary-light dark:text-text-secondary-dark">Recurso não encontrado</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="p-3"><code class="text-red-500 font-mono">429</code></td>
+                                                <td class="p-3 text-text-secondary-light dark:text-text-secondary-dark">Muitas requisições (rate limit excedido)</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="p-3"><code class="text-red-500 font-mono">500</code></td>
+                                                <td class="p-3 text-text-secondary-light dark:text-text-secondary-dark">Erro interno do servidor</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Integrações -->
+                        <section id="integracoes" class="scroll-mt-24">
+                            <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-6">
+                                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4" data-i18n="integrations-title">Integrações</h2>
+                                <p class="text-text-secondary-light dark:text-text-secondary-dark mb-6">
+                                    Integre a GO API WhatsApp com as principais ferramentas do mercado para potencializar sua automação.
+                                </p>
+
+                                <!-- Chatwoot Integration -->
+                                <div class="mb-8">
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <div class="bg-blue-500/10 p-2 rounded-lg">
+                                            <svg class="w-8 h-8 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Chatwoot</h3>
+                                            <p class="text-sm text-text-secondary-light dark:text-text-secondary-dark">Plataforma de atendimento ao cliente open-source</p>
+                                        </div>
+                                    </div>
+
+                                    <p class="text-text-secondary-light dark:text-text-secondary-dark mb-4">
+                                        Conecte sua instância do WhatsApp ao Chatwoot para centralizar todos os atendimentos em uma única plataforma.
+                                    </p>
+
+                                    <h4 class="text-lg font-semibold text-slate-900 dark:text-white mb-3">Configuração</h4>
+                                    <div class="code-block-macos mb-4">
+                                        <div class="code-block-header">
+                                            <div class="macos-buttons">
+                                                <div class="macos-btn macos-btn-close"></div>
+                                                <div class="macos-btn macos-btn-minimize"></div>
+                                                <div class="macos-btn macos-btn-maximize"></div>
+                                            </div>
+                                            <div class="code-block-title">Webhook Chatwoot</div>
+                                            <button class="copy-btn" onclick="copyCode(this, 'code-chatwoot')">
+                                                <span class="material-symbols-outlined" style="font-size: 16px;">content_copy</span>
+                                                Copiar
+                                            </button>
+                                        </div>
+                                        <div class="code-content">
+<pre id="code-chatwoot"><span class="token-comment">// Configure o webhook no Chatwoot</span>
+<span class="token-keyword">POST</span> <span class="token-string">https://api.goapi.com.br/v1/instances/{instance_id}/webhook</span>
+
+{
+  <span class="token-property">"url"</span>: <span class="token-string">"https://seu-chatwoot.com/api/v1/webhooks/whatsapp"</span>,
+  <span class="token-property">"events"</span>: [<span class="token-string">"message.received"</span>, <span class="token-string">"message.sent"</span>]
+}</pre>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Typebot Integration -->
+                                <div class="mb-8">
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <div class="bg-purple-500/10 p-2 rounded-lg">
+                                            <svg class="w-8 h-8 text-purple-500" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Typebot</h3>
+                                            <p class="text-sm text-text-secondary-light dark:text-text-secondary-dark">Construtor de chatbots conversacionais</p>
+                                        </div>
+                                    </div>
+
+                                    <p class="text-text-secondary-light dark:text-text-secondary-dark mb-4">
+                                        Crie fluxos conversacionais avançados e integre com o WhatsApp através da GO API.
+                                    </p>
+
+                                    <h4 class="text-lg font-semibold text-slate-900 dark:text-white mb-3">Integração via Webhook</h4>
+                                    <div class="code-block-macos mb-4">
+                                        <div class="code-block-header">
+                                            <div class="macos-buttons">
+                                                <div class="macos-btn macos-btn-close"></div>
+                                                <div class="macos-btn macos-btn-minimize"></div>
+                                                <div class="macos-btn macos-btn-maximize"></div>
+                                            </div>
+                                            <div class="code-block-title">Typebot Webhook</div>
+                                            <button class="copy-btn" onclick="copyCode(this, 'code-typebot')">
+                                                <span class="material-symbols-outlined" style="font-size: 16px;">content_copy</span>
+                                                Copiar
+                                            </button>
+                                        </div>
+                                        <div class="code-content">
+<pre id="code-typebot"><span class="token-comment">// Enviar mensagem do Typebot para WhatsApp</span>
+<span class="token-function">fetch</span>(<span class="token-string">'https://api.goapi.com.br/v1/messages/send'</span>, {
+  <span class="token-property">method</span>: <span class="token-string">'POST'</span>,
+  <span class="token-property">headers</span>: {
+    <span class="token-string">'Authorization'</span>: <span class="token-string">'Bearer SEU_TOKEN'</span>,
+    <span class="token-string">'Content-Type'</span>: <span class="token-string">'application/json'</span>
+  },
+  <span class="token-property">body</span>: <span class="token-function">JSON.stringify</span>({
+    <span class="token-property">instance_id</span>: <span class="token-string">'inst_123'</span>,
+    <span class="token-property">number</span>: <span class="token-string">'5511999999999'</span>,
+    <span class="token-property">message</span>: <span class="token-string">'Mensagem do Typebot'</span>
+  })
+})</pre>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- n8n Integration -->
+                                <div class="mb-8">
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <div class="bg-red-500/10 p-2 rounded-lg">
+                                            <svg class="w-8 h-8 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 18c-3.87-.96-7-5.54-7-10V8.3l7-3.11v14.82z"/>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-xl font-bold text-slate-900 dark:text-white">n8n</h3>
+                                            <p class="text-sm text-text-secondary-light dark:text-text-secondary-dark">Plataforma de automação de workflows</p>
+                                        </div>
+                                    </div>
+
+                                    <p class="text-text-secondary-light dark:text-text-secondary-dark mb-4">
+                                        Crie automações poderosas conectando o WhatsApp com centenas de aplicativos através do n8n.
+                                    </p>
+
+                                    <h4 class="text-lg font-semibold text-slate-900 dark:text-white mb-3">Exemplo de Workflow</h4>
+                                    <div class="code-block-macos mb-4">
+                                        <div class="code-block-header">
+                                            <div class="macos-buttons">
+                                                <div class="macos-btn macos-btn-close"></div>
+                                                <div class="macos-btn macos-btn-minimize"></div>
+                                                <div class="macos-btn macos-btn-maximize"></div>
+                                            </div>
+                                            <div class="code-block-title">n8n HTTP Request Node</div>
+                                            <button class="copy-btn" onclick="copyCode(this, 'code-n8n')">
+                                                <span class="material-symbols-outlined" style="font-size: 16px;">content_copy</span>
+                                                Copiar
+                                            </button>
+                                        </div>
+                                        <div class="code-content">
+<pre id="code-n8n"><span class="token-comment">// Configuração do nó HTTP Request no n8n</span>
+{
+  <span class="token-property">"method"</span>: <span class="token-string">"POST"</span>,
+  <span class="token-property">"url"</span>: <span class="token-string">"https://api.goapi.com.br/v1/messages/send"</span>,
+  <span class="token-property">"authentication"</span>: <span class="token-string">"headerAuth"</span>,
+  <span class="token-property">"headerAuth"</span>: {
+    <span class="token-property">"name"</span>: <span class="token-string">"Authorization"</span>,
+    <span class="token-property">"value"</span>: <span class="token-string">"Bearer {{$credentials.goapi.token}}"</span>
+  },
+  <span class="token-property">"body"</span>: {
+    <span class="token-property">"instance_id"</span>: <span class="token-string">"{{$json.instance_id}}"</span>,
+    <span class="token-property">"number"</span>: <span class="token-string">"{{$json.number}}"</span>,
+    <span class="token-property">"message"</span>: <span class="token-string">"{{$json.message}}"</span>
+  }
+}</pre>
+                                        </div>
+                                    </div>
+
+                                    <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-900/30 rounded-lg p-4">
+                                        <div class="flex gap-3">
+                                            <span class="material-symbols-outlined text-green-600 dark:text-green-400 mt-0.5">check_circle</span>
+                                            <div>
+                                                <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-1">Dica</h4>
+                                                <p class="text-sm text-text-secondary-light dark:text-text-secondary-dark">
+                                                    Use variáveis do n8n para criar workflows dinâmicos e reutilizáveis.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Support Section -->
+                        <div class="bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 rounded-xl p-6 mt-8">
+                            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                                <div>
+                                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2" data-i18n="need-help">Precisa de Ajuda?</h3>
+                                    <p class="text-sm text-text-secondary-light dark:text-text-secondary-dark">
+                                        Nossa equipe está pronta para ajudar você com qualquer dúvida sobre a integração.
+                                    </p>
+                                </div>
+                                <button
+                                    class="bg-primary hover:bg-white hover:text-slate-900 text-slate-900 font-semibold px-6 py-3 rounded-lg transition-all shadow-lg shadow-primary/20 whitespace-nowrap">
+                                    Falar com Suporte
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </main>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Bar -->
+    <footer class="w-full bg-gray-800 dark:bg-gray-900 border-t border-gray-700 dark:border-gray-800 py-3 mt-auto">
+        <div class="flex items-center justify-center gap-2 text-sm text-gray-200">
+            <span class="text-primary">GO API Whatsapp</span>
+            <span class="group relative cursor-help">
+                <span class="group-hover:hidden">Time GO</span>
+                <span class="hidden group-hover:inline"><strong> Nakamura</strong> / <strong>Joceilton Gomes</strong> / <strong>Augusto Oliveira</strong> / <strong>Othon Righetti</strong></span>
+            </span>
+        </div>
+    </footer>
+
+    <script>
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+
+        // Check for saved theme preference or default to 'dark'
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        html.classList.toggle('dark', currentTheme === 'dark');
+
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            const newTheme = html.classList.contains('dark') ? 'dark' : 'light';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // Language toggle functionality
+        
+        // Translations object - MUST be declared first - COMPLETE AND DETAILED
+        const translations = {
+            'pt': {
+                // Navigation
+                'getting-started': 'Começando',
+                'introduction': 'Introdução',
+                'authentication': 'Autenticação',
+                'manage-instances': 'Gerenciar Instâncias',
+                'endpoints': 'Endpoints',
+                'send-message': 'Enviar Mensagem',
+                'send-media': 'Enviar Mídia',
+                'webhooks': 'Webhooks',
+                'resources': 'Recursos',
+                'support': 'Suporte',
+                
+                // Main titles
+                'api-docs': 'Documentação da API',
+                'api-subtitle': 'Bem-vindo à documentação oficial da GO API WhatsApp. Aqui você encontrará tudo que precisa para integrar nossa API ao seu sistema.',
+                
+                // Quick Start
+                'quick-start': 'Quick Start',
+                'quick-start-desc': 'Comece a usar a API em minutos. Siga estes passos simples para fazer sua primeira requisição.',
+                'step-1': '1. Obtenha sua chave de API',
+                'step-2': '2. Crie uma instância',
+                'step-3': '3. Escaneie o QR Code',
+                'step-4': '4. Envie sua primeira mensagem',
+                
+                // Introduction section
+                'intro-title': 'Introdução',
+                'intro-desc': 'A GO API WhatsApp é uma solução completa para integração do WhatsApp ao seu sistema. Envie mensagens, gerencie múltiplas instâncias e receba webhooks em tempo real.',
+                'base-url': 'URL Base',
+                'version': 'Versão',
+                'current-version': 'v1.0.0',
+                
+                // Authentication section
+                'auth-title': 'Autenticação',
+                'auth-desc': 'Todas as requisições à API devem incluir um token de autenticação no header Authorization.',
+                'auth-header': 'Header de Autenticação',
+                'example-request': 'Exemplo de Requisição',
+                
+                // Messages section
+                'send-msg-title': 'Enviar Mensagem de Texto',
+                'send-msg-desc': 'Envie mensagens de texto para qualquer número do WhatsApp.',
+                'parameters': 'Parâmetros',
+                'param-instance': 'ID da instância',
+                'param-number': 'Número do destinatário (com código do país)',
+                'param-message': 'Texto da mensagem',
+                'example-response': 'Exemplo de Resposta',
+                
+                // Instances
+                'instances-title': 'Gerenciar Instâncias',
+                'create-instance': 'Criar Instância',
+                'instance-status': 'Status da Instância',
+                'get-qr': 'Obter QR Code',
+                'delete-instance': 'Deletar Instância',
+                'json-body': 'Body (JSON)',
+                'send-media-title': 'Enviar Mídia e Outros',
+                
+                // Webhooks section
+                'webhooks-title': 'Webhooks',
+                'webhooks-desc': 'Configure webhooks para receber notificações em tempo real sobre eventos da sua instância.',
+                'webhook-url': 'URL do Webhook',
+                'example-payload': 'Exemplo de Payload',
+                
+                // Code Examples
+                'code-examples': 'Exemplos de Código',
+                'code-examples-desc': 'Veja exemplos práticos de como usar a API em diferentes linguagens de programação.',
+                'javascript-example': 'JavaScript',
+                'python-example': 'Python',
+                'php-example': 'PHP',
+                'ruby-example': 'Ruby',
+                'java-example': 'Java',
+                'csharp-example': 'C#',
+                'go-example': 'Go',
+                'curl-example': 'cURL',
+                
+                // Error Codes
+                'error-codes': 'Códigos de Erro',
+                'error-codes-desc': 'Lista completa de códigos de erro que a API pode retornar.',
+                
+                // Integrations
+                'integrations-title': 'Integrações',
+                'integrations-desc': 'Integre facilmente com as principais plataformas do mercado.',
+                'chatwoot-desc': 'Plataforma de atendimento ao cliente open-source',
+                'typebot-desc': 'Construtor de chatbots conversacionais',
+                'n8n-desc': 'Plataforma de automação de workflows',
+                
+                // Support
+                'need-help': 'Precisa de Ajuda?',
+                'support-desc': 'Nossa equipe está pronta para ajudar você.',
+                'contact-support': 'Entrar em Contato',
+                
+                // Code labels
+                'copy': 'Copiar',
+                'copied': 'Copiado!'
+            },
+            'en': {
+                // Navigation
+                'getting-started': 'Getting Started',
+                'introduction': 'Introduction',
+                'authentication': 'Authentication',
+                'manage-instances': 'Manage Instances',
+                'endpoints': 'Endpoints',
+                'send-message': 'Send Message',
+                'send-media': 'Send Media',
+                'webhooks': 'Webhooks',
+                'resources': 'Resources',
+                'support': 'Support',
+                
+                // Main titles
+                'api-docs': 'API Documentation',
+                'api-subtitle': 'Welcome to the official GO WhatsApp API documentation. Here you will find everything you need to integrate our API into your system.',
+                
+                // Quick Start
+                'quick-start': 'Quick Start',
+                'quick-start-desc': 'Start using the API in minutes. Follow these simple steps to make your first request.',
+                'step-1': '1. Get your API key',
+                'step-2': '2. Create an instance',
+                'step-3': '3. Scan the QR Code',
+                'step-4': '4. Send your first message',
+                
+                // Introduction section
+                'intro-title': 'Introduction',
+                'intro-desc': 'GO WhatsApp API is a complete solution for integrating WhatsApp into your system. Send messages, manage multiple instances and receive real-time webhooks.',
+                'base-url': 'Base URL',
+                'version': 'Version',
+                'current-version': 'v1.0.0',
+                
+                // Authentication section
+                'auth-title': 'Authentication',
+                'auth-desc': 'All API requests must include an authentication token in the Authorization header.',
+                'auth-header': 'Authentication Header',
+                'example-request': 'Example Request',
+                
+                // Messages section
+                'send-msg-title': 'Send Text Message',
+                'send-msg-desc': 'Send text messages to any WhatsApp number.',
+                'parameters': 'Parameters',
+                'param-instance': 'Instance ID',
+                'param-number': 'Recipient number (with country code)',
+                'param-message': 'Message text',
+                'example-response': 'Example Response',
+                
+                // Instances
+                'instances-title': 'Manage Instances',
+                'create-instance': 'Create Instance',
+                'instance-status': 'Instance Status',
+                'get-qr': 'Get QR Code',
+                'delete-instance': 'Delete Instance',
+                'json-body': 'Body (JSON)',
+                'send-media-title': 'Send Media & Others',
+                
+                // Webhooks section
+                'webhooks-title': 'Webhooks',
+                'webhooks-desc': 'Configure webhooks to receive real-time notifications about your instance events.',
+                'webhook-url': 'Webhook URL',
+                'example-payload': 'Example Payload',
+                
+                // Code Examples
+                'code-examples': 'Code Examples',
+                'code-examples-desc': 'See practical examples of how to use the API in different programming languages.',
+                'javascript-example': 'JavaScript',
+                'python-example': 'Python',
+                'php-example': 'PHP',
+                'ruby-example': 'Ruby',
+                'java-example': 'Java',
+                'csharp-example': 'C#',
+                'go-example': 'Go',
+                'curl-example': 'cURL',
+                
+                // Error Codes
+                'error-codes': 'Error Codes',
+                'error-codes-desc': 'Complete list of error codes that the API can return.',
+                
+                // Integrations
+                'integrations-title': 'Integrations',
+                'integrations-desc': 'Easily integrate with the main platforms on the market.',
+                'chatwoot-desc': 'Open-source customer support platform',
+                'typebot-desc': 'Conversational chatbot builder',
+                'n8n-desc': 'Workflow automation platform',
+                
+                // Support
+                'need-help': 'Need Help?',
+                'support-desc': 'Our team is ready to help you.',
+                'contact-support': 'Contact Support',
+                
+                // Code labels
+                'copy': 'Copy',
+                'copied': 'Copied!'
+            },
+            'es': {
+                // Navigation
+                'getting-started': 'Comenzando',
+                'introduction': 'Introducción',
+                'authentication': 'Autenticación',
+                'manage-instances': 'Administrar Instancias',
+                'endpoints': 'Endpoints',
+                'send-message': 'Enviar Mensaje',
+                'send-media': 'Enviar Medios',
+                'webhooks': 'Webhooks',
+                'resources': 'Recursos',
+                'support': 'Soporte',
+                
+                // Main titles
+                'api-docs': 'Documentación de la API',
+                'api-subtitle': 'Bienvenido a la documentación oficial de GO WhatsApp API. Aquí encontrarás todo lo que necesitas para integrar nuestra API en tu sistema.',
+                
+                // Quick Start
+                'quick-start': 'Inicio Rápido',
+                'quick-start-desc': 'Comienza a usar la API en minutos. Sigue estos simples pasos para hacer tu primera solicitud.',
+                'step-1': '1. Obtén tu clave de API',
+                'step-2': '2. Crea una instancia',
+                'step-3': '3. Escanea el código QR',
+                'step-4': '4. Envía tu primer mensaje',
+                
+                // Introduction section
+                'intro-title': 'Introducción',
+                'intro-desc': 'GO WhatsApp API es una solución completa para integrar WhatsApp en tu sistema. Envía mensajes, administra múltiples instancias y recibe webhooks en tiempo real.',
+                'base-url': 'URL Base',
+                'version': 'Versión',
+                'current-version': 'v1.0.0',
+                
+                // Authentication section
+                'auth-title': 'Autenticación',
+                'auth-desc': 'Todas las solicitudes a la API deben incluir un token de autenticación en el encabezado Authorization.',
+                'auth-header': 'Encabezado de Autenticación',
+                'example-request': 'Ejemplo de Solicitud',
+                
+                // Messages section
+                'send-msg-title': 'Enviar Mensaje de Texto',
+                'send-msg-desc': 'Envía mensajes de texto a cualquier número de WhatsApp.',
+                'parameters': 'Parámetros',
+                'param-instance': 'ID de la instancia',
+                'param-number': 'Número del destinatario (con código de país)',
+                'param-message': 'Texto del mensaje',
+                'example-response': 'Ejemplo de Respuesta',
+                
+                // Instances
+                'instances-title': 'Administrar Instancias',
+                'create-instance': 'Crear Instancia',
+                'instance-status': 'Estado de la Instancia',
+                'get-qr': 'Obtener Código QR',
+                'delete-instance': 'Eliminar Instancia',
+                'json-body': 'Cuerpo (JSON)',
+                'send-media-title': 'Enviar Medios y Otros',
+                
+                // Webhooks section
+                'webhooks-title': 'Webhooks',
+                'webhooks-desc': 'Configura webhooks para recibir notificaciones en tiempo real sobre los eventos de tu instancia.',
+                'webhook-url': 'URL del Webhook',
+                'example-payload': 'Ejemplo de Payload',
+                
+                // Code Examples
+                'code-examples': 'Ejemplos de Código',
+                'code-examples-desc': 'Ve ejemplos prácticos de cómo usar la API en diferentes lenguajes de programación.',
+                'javascript-example': 'JavaScript',
+                'python-example': 'Python',
+                'php-example': 'PHP',
+                'ruby-example': 'Ruby',
+                'java-example': 'Java',
+                'csharp-example': 'C#',
+                'go-example': 'Go',
+                'curl-example': 'cURL',
+                
+                // Error Codes
+                'error-codes': 'Códigos de Error',
+                'error-codes-desc': 'Lista completa de códigos de error que la API puede devolver.',
+                
+                // Integrations
+                'integrations-title': 'Integraciones',
+                'integrations-desc': 'Integra fácilmente con las principales plataformas del mercado.',
+                'chatwoot-desc': 'Plataforma de atención al cliente de código abierto',
+                'typebot-desc': 'Constructor de chatbots conversacionales',
+                'n8n-desc': 'Plataforma de automatización de flujos de trabajo',
+                
+                // Support
+                'need-help': '¿Necesitas Ayuda?',
+                'support-desc': 'Nuestro equipo está listo para ayudarte.',
+                'contact-support': 'Contactar Soporte',
+                
+                // Code labels
+                'copy': 'Copiar',
+                'copied': '¡Copiado!'
+            }
+        };
+
+        const languageToggle = document.getElementById('language-toggle');
+        const languageDropdown = document.getElementById('language-dropdown');
+        const currentLangText = document.getElementById('current-lang-text');
+        let currentLanguage = localStorage.getItem('language') || 'pt';
+
+        const languageNames = {
+            'pt': 'Português',
+            'en': 'English',
+            'es': 'Español'
+        };
+
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('language', lang);
+            currentLangText.textContent = languageNames[lang];
+            
+            // Update all translatable elements
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    element.innerHTML = translations[lang][key];
+                }
+            });
+            
+            // Close dropdown
+            languageDropdown.classList.add('hidden');
+        }
+
+        // Toggle dropdown
+        languageToggle.addEventListener('click', () => {
+            languageDropdown.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!languageToggle.contains(e.target) && !languageDropdown.contains(e.target)) {
+                languageDropdown.classList.add('hidden');
+            }
+        });
+
+        // Function to select language (called from dropdown buttons)
+        function selectLanguage(lang) {
+            changeLanguage(lang);
+        }
+
+        // Initialize language
+        changeLanguage(currentLanguage);
+    </script>
+
+</body>
+
+</html>

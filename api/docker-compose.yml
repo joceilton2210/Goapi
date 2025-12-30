@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  go-api-whatsapp:
+    container_name: go-api-whatsapp
+    build: .
+    restart: always
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./sessions:/app/sessions
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+      - ./.env:/app/.env
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
