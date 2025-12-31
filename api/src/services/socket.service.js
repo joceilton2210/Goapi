@@ -102,6 +102,15 @@ class SocketService {
         });
     }
 
+    // Emitir erro de conexão
+    emitError(instanceId, message, details = {}) {
+        this.emitToInstance(instanceId, 'connection:error', {
+            message,
+            ...details,
+            timestamp: new Date().toISOString()
+        });
+    }
+
     // Verificar se há clientes conectados para uma instância
     hasClientsForInstance(instanceId) {
         return this.connectedClients.has(instanceId) && 

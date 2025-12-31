@@ -262,6 +262,16 @@
                                             </span>
                                             <p class="text-sm font-medium">Aguardando leitura...</p>
                                         </div>
+                                        <!-- Barra de progresso do QR -->
+                                        <div id="qr-progress-container" class="w-full hidden">
+                                            <div class="flex justify-between text-xs text-slate-500 dark:text-slate-400 mb-1">
+                                                <span>Tempo restante</span>
+                                                <span id="qr-timer">45s</span>
+                                            </div>
+                                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                                                <div id="qr-progress-bar" class="bg-primary h-1.5 rounded-full transition-all duration-1000" style="width: 100%"></div>
+                                            </div>
+                                        </div>
                                         <button id="reload-qr-btn"
                                             class="w-full flex cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-10 px-4 bg-primary text-slate-900 text-sm font-bold leading-normal hover:bg-white hover:text-slate-900 transition-all shadow-md shadow-primary/20">
                                             <span class="material-symbols-outlined text-[18px]">refresh</span>
@@ -474,6 +484,114 @@
         let qrCodeObj = null;
         let socket = null;
         let lastQRCode = null;
+        let qrTimeout = null;
+        let qrRetryCount = 0;
+        let qrProgressInterval = null;
+        const QR_TIMEOUT_MS = 45000; // QR expira em ~45s no Baileys
+        const MAX_QR_RETRIES = 10;
+
+        // Limpar timeout do QR
+        function clearQRTimeout() {
+            if (qrTimeout) {
+                clearTimeout(qrTimeout);
+                qrTimeout = null;
+            }
+            if (qrProgressInterval) {
+                clearInterval(qrProgressInterval);
+                qrProgressInterval = null;
+            }
+            // Esconder barra de progresso
+            const progressContainer = document.getElementById('qr-progress-container');
+            if (progressContainer) {
+                progressContainer.classList.add('hidden');
+            }
+        }
+
+        // Atualizar barra de progresso visual
+        function updateProgressBar(remainingMs) {
+            const progressBar = document.getElementById('qr-progress-bar');
+            const timerText = document.getElementById('qr-timer');
+            const progressContainer = document.getElementById('qr-progress-container');
+            
+            if (!progressBar || !timerText || !progressContainer) return;
+            
+            progressContainer.classList.remove('hidden');
+            
+            const percentage = (remainingMs / QR_TIMEOUT_MS) * 100;
+            const seconds = Math.ceil(remainingMs / 1000);
+            
+            progressBar.style.width = `${percentage}%`;
+            timerText.textContent = `${seconds}s`;
+            
+            // Mudar cor conforme o tempo
+            if (percentage > 50) {
+                progressBar.className = 'bg-primary h-1.5 rounded-full transition-all duration-1000';
+            } else if (percentage > 25) {
+                progressBar.className = 'bg-yellow-500 h-1.5 rounded-full transition-all duration-1000';
+            } else {
+                progressBar.className = 'bg-red-500 h-1.5 rounded-full transition-all duration-1000';
+            }
+        }
+
+        // Iniciar timer de expiração do QR
+        function startQRTimeout() {
+            clearQRTimeout();
+            
+            let remainingMs = QR_TIMEOUT_MS;
+            updateProgressBar(remainingMs);
+            
+            // Atualizar barra a cada segundo
+            qrProgressInterval = setInterval(() => {
+                remainingMs -= 1000;
+                if (remainingMs > 0) {
+                    updateProgressBar(remainingMs);
+                }
+            }, 1000);
+            
+            qrTimeout = setTimeout(() => {
+                console.log('⏰ QR Code expirado, solicitando novo...');
+                qrRetryCount++;
+                
+                if (qrRetryCount >= MAX_QR_RETRIES) {
+                    updateQRStatus('error', 'Muitas tentativas. Clique para recarregar.');
+                    showError('QR Code expirou muitas vezes. Tente novamente.', 'Timeout');
+                    clearQRTimeout();
+                    return;
+                }
+                
+                updateQRStatus('waiting', `QR expirado. Gerando novo... (${qrRetryCount}/${MAX_QR_RETRIES})`);
+                requestNewQRCode();
+            }, QR_TIMEOUT_MS);
+        }
+
+        // Solicitar novo QR Code via API
+        async function requestNewQRCode() {
+            try {
+                // Primeiro, tentar recriar a instância para forçar novo QR
+                const response = await fetch(`${API_CONFIG.baseUrl}/instances`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': API_CONFIG.apiKey
+                    },
+                    body: JSON.stringify({ instanceId })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.data && data.data.qrCode) {
+                    renderQRCode(data.data.qrCode);
+                    updateQRStatus('waiting', 'Novo QR Code gerado! Escaneie agora.');
+                    startQRTimeout();
+                } else {
+                    // Fallback: buscar QR existente
+                    await fetchInitialQR();
+                }
+            } catch (error) {
+                console.error('Erro ao solicitar novo QR:', error);
+                updateQRStatus('error', 'Erro ao gerar QR. Clique para tentar novamente.');
+            }
+        }
 
         // Conectar ao WebSocket
         function connectWebSocket() {
@@ -501,8 +619,10 @@
             // QR Code atualizado em tempo real
             socket.on('qr:updated', (data) => {
                 console.log('📱 QR Code received via WebSocket');
+                qrRetryCount = 0; // Reset contador quando recebe novo QR
                 renderQRCode(data.qrCode);
                 updateQRStatus('waiting', 'Aguardando leitura do QR Code...');
+                startQRTimeout(); // Iniciar timer de expiração
             });
 
             // Status de conexão atualizado
@@ -519,6 +639,7 @@
             // CONECTADO! Em tempo real
             socket.on('connection:success', (data) => {
                 console.log('✓✓✓ CONNECTED VIA WEBSOCKET!', data);
+                clearQRTimeout(); // Parar timer quando conectar
                 updateQRStatus('connected', '✓ WhatsApp Conectado!');
                 
                 showSuccess(`WhatsApp conectado!\nTelefone: ${data.phoneNumber}\nRedirecionando...`, 'Sucesso!');
@@ -534,7 +655,25 @@
             // Desconectado
             socket.on('connection:disconnected', (data) => {
                 console.log('✗ Disconnected:', data.reason);
+                clearQRTimeout();
                 updateQRStatus('error', 'Desconectado. Tentando reconectar...');
+                
+                // Tentar reconectar automaticamente após 3 segundos
+                setTimeout(() => {
+                    requestNewQRCode();
+                }, 3000);
+            });
+
+            // Erro de conexão
+            socket.on('connection:error', (data) => {
+                console.error('❌ Connection error:', data);
+                clearQRTimeout();
+                updateQRStatus('error', data.message || 'Erro de conexão. Tentando novamente...');
+                
+                // Tentar novamente após 5 segundos
+                setTimeout(() => {
+                    requestNewQRCode();
+                }, 5000);
             });
         }
 
@@ -580,6 +719,8 @@
         // Buscar QR inicial (fallback)
         async function fetchInitialQR() {
             try {
+                updateQRStatus('waiting', 'Conectando ao servidor...');
+                
                 const response = await fetch(`${API_CONFIG.baseUrl}/instances/${instanceId}/qr`, {
                     headers: { 'x-api-key': API_CONFIG.apiKey }
                 });
@@ -588,9 +729,46 @@
                 if (data.success && data.data && data.data.qrCode) {
                     renderQRCode(data.data.qrCode);
                     updateQRStatus('waiting', 'Aguardando leitura do QR Code...');
+                    startQRTimeout(); // Iniciar timer de expiração
+                } else if (response.status === 404) {
+                    // QR não disponível, pode estar conectado ou inicializando
+                    console.log('QR não disponível, verificando status...');
+                    await checkInstanceStatus();
+                } else {
+                    updateQRStatus('error', data.message || 'Erro ao carregar QR Code');
                 }
             } catch (error) {
                 console.error('Error fetching initial QR:', error);
+                updateQRStatus('error', 'Erro de conexão. Clique para tentar novamente.');
+            }
+        }
+
+        // Verificar status da instância
+        async function checkInstanceStatus() {
+            try {
+                const response = await fetch(`${API_CONFIG.baseUrl}/instances/${instanceId}/status`, {
+                    headers: { 'x-api-key': API_CONFIG.apiKey }
+                });
+                const data = await response.json();
+
+                if (data.success && data.data) {
+                    if (data.data.isConnected) {
+                        updateQRStatus('connected', '✓ WhatsApp já está conectado!');
+                        showSuccess('Esta instância já está conectada!', 'Conectado');
+                        setTimeout(() => {
+                            window.location.href = 'instancia.html';
+                        }, 2000);
+                    } else if (data.data.connectionStatus === 'initializing') {
+                        updateQRStatus('waiting', 'Inicializando... Aguarde o QR Code.');
+                        // Aguardar e tentar novamente
+                        setTimeout(fetchInitialQR, 3000);
+                    } else {
+                        // Criar instância se não existir
+                        await requestNewQRCode();
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking status:', error);
             }
         }
 
@@ -678,8 +856,10 @@
         const reloadBtn = document.getElementById('reload-qr-btn');
         if (reloadBtn) {
             reloadBtn.addEventListener('click', () => {
+                qrRetryCount = 0; // Reset contador
+                clearQRTimeout();
                 updateQRStatus('waiting', 'Recarregando...');
-                fetchInitialQR();
+                requestNewQRCode();
             });
         }
 
