@@ -18,8 +18,9 @@ async function testConnection() {
         logger,
         printQRInTerminal: false,
         auth: state,
-        browser: ['Test', 'Chrome', '10.0'],
-        markOnlineOnConnect: true
+        browser: ['Chrome (Linux)', '', ''],
+        syncFullHistory: false,
+        markOnlineOnConnect: false
     });
 
     sock.ev.on('connection.update', (update) => {

@@ -694,22 +694,37 @@
                 `Tem certeza que deseja deletar a instância "${instanceId}"? Esta ação não pode ser desfeita.`,
                 async () => {
                     try {
+                        console.log(`🗑️ Deletando instância: ${instanceId}`);
+                        
                         const response = await fetch(`${API_CONFIG.baseUrl}/instances/${instanceId}`, {
                             method: 'DELETE',
                             headers: { 'x-api-key': API_CONFIG.apiKey }
                         });
                         
+                        console.log('Response status:', response.status);
+                        console.log('Response ok:', response.ok);
+                        
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            console.error('Error response:', errorText);
+                            showError(`Erro HTTP ${response.status}: ${errorText}`);
+                            return;
+                        }
+                        
                         const data = await response.json();
+                        console.log('Delete response:', data);
                         
                         if (data.success) {
                             showSuccess('Instância deletada com sucesso!');
                             setTimeout(() => fetchInstances(), 1000);
                         } else {
+                            console.error('Delete failed:', data);
                             showError(data.message || 'Erro desconhecido ao deletar instância');
                         }
                     } catch (error) {
-                        console.error('Error deleting instance:', error);
-                        showError('Erro ao conectar com o servidor');
+                        console.error('❌ Error deleting instance:', error);
+                        console.error('Error stack:', error.stack);
+                        showError(`Erro ao deletar: ${error.message}`);
                     }
                 },
                 null,

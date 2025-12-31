@@ -109,13 +109,29 @@ class InstanceController {
     async delete(req, res, next) {
         try {
             const { instanceId } = req.params;
+            
+            logger.info(`🗑️ Delete request for instance: ${instanceId}`);
+            
+            const instance = baileysService.getInstance(instanceId);
+            
+            if (!instance) {
+                logger.warn(`Instance ${instanceId} not found in memory`);
+                return res.status(404).json({
+                    success: false,
+                    message: 'Instance not found'
+                });
+            }
+            
             await baileysService.deleteInstance(instanceId);
+            
+            logger.info(`✅ Instance ${instanceId} deleted successfully`);
 
             res.json({
                 success: true,
                 message: 'Instance deleted successfully'
             });
         } catch (error) {
+            logger.error(`❌ Error deleting instance:`, error);
             next(error);
         }
     }
